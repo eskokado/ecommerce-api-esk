@@ -1,0 +1,20 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  user: eskokado
+  password: eskokado
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: ecommerce_api_esk_development
+
+test:
+  <<: *default
+  database: ecommerce_api_esk_test
+
+production:
+  <<: *default
+  database: ecommerce_api_esk_production
+  username: ecommerce_api_esk
+  password: <%= ENV['ECOMMERCE_API_ESK_DATABASE_PASSWORD'] %>
