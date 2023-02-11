@@ -1,2 +1,5 @@
-class Admin::V1::ApiController < ApplicationController
+class Admin::V1
+  class ApiController < ApplicationController
+    include Authenticable
+  end
 end
