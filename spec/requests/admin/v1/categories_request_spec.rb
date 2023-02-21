@@ -119,4 +119,16 @@ RSpec.describe "Admin::V1::Categories", type: :request do
       end
     end
   end
+
+  context "DELETE /categories/:id" do
+    let!(:category) { create(:category) }
+    let(:url) { "/admin/v1/categories/#{category.id}" }
+
+    it 'removes Category' do
+      expect do
+        delete url, headers: auth_header(user)
+      end.to change(Category, :count).by(-1)
+    end
+
+  end
 end
