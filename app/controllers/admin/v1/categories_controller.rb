@@ -16,6 +16,13 @@ module Admin::V1
       save_category!
     end
 
+    def destroy
+      @category = Category.find(params[:id])
+      @category.destroy!
+    rescue
+      render_error(fields: @category.errors.messages)
+    end
+
     private
 
     def category_params
@@ -28,7 +35,6 @@ module Admin::V1
       render :show
     rescue
       render json: { errors: { fields: @category.errors.messages } }, status: :unprocessable_entity
-      # Admin::V1::ApiController.render_error(message: @category.errors.messages, fields: @category.errors.details)
     end
 
   end
