@@ -23,4 +23,10 @@ RSpec.describe "Admin V1 Categories as :client", type: :request do
     include_examples "forbidden access"
   end
 
+  context "DELETE /categories/:id" do
+    let!(:category) { create(:category) }
+    let(:url) { "/admin/v1/categories/#{category.id}" }
+    before(:each) { delete url, headers: auth_header(user) }
+    include_examples "forbidden access"
+  end
 end
