@@ -14,5 +14,16 @@ shared_examples "paginatable concern" do |factory_name|
         expect(paginated_records).to eq expected_records
       end
     end
+
+    context "when :page is fulfilled and :length is empty" do
+      let(:page) { 2 }
+
+      it "returns default 10 records" do
+        paginated_records = described_class.paginate(page, nil)
+        expect(paginated_records.count).to eq 10
+      end
+    end
+
+
   end
 end
