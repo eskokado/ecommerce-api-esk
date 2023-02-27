@@ -1,4 +1,5 @@
 class Category < ApplicationRecord
+  include NameSearchable
   # validates :name, presence: true, uniqueness: { case_sensitive: false }
   validates :name, presence: true
   validates :name, uniqueness: true
