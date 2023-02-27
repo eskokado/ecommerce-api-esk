@@ -60,7 +60,10 @@ shared_examples "paginatable concern" do |factory_name|
         expect(paginated_records.count).to eq 0
       end
 
+      it "returns empty result" do
+        paginated_records = described_class.paginate(page, length)
+        expect(paginated_records).to_not be_present
+      end
     end
   end
-
 end
