@@ -83,5 +83,15 @@ shared_examples "paginatable concern" do |factory_name|
       end
     end
 
+
+    context "when :page is fulfilled and :length is empty" do
+      let(:page) { 2 }
+
+      it "does not return any records" do
+        paginated_records = described_class.paginate(page, nil)
+        expect(paginated_records.count).to eq 0
+      end
+    end
+
   end
 end
