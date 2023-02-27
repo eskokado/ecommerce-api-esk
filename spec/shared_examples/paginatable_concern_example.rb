@@ -76,6 +76,11 @@ shared_examples "paginatable concern" do |factory_name|
         expect(paginated_records.count).to eq 7
       end
 
+      it "matches first 7 records" do
+        paginated_records = described_class.paginate(nil, nil)
+        expected_records = described_class.all[0..6]
+        expect(paginated_records).to eq expected_records
+      end
     end
 
   end
