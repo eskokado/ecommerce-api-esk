@@ -22,8 +22,14 @@ shared_examples "paginatable concern" do |factory_name|
         paginated_records = described_class.paginate(page, nil)
         expect(paginated_records.count).to eq 10
       end
+
+      it "returns 10 records from right page" do
+        paginated_records = described_class.paginate(page, nil)
+        first_record_index = 10
+        last_record_index = 19
+        expected_records = described_class.all[first_record_index..last_record_index]
+        expect(paginated_records).to eq expected_records
+      end
     end
-
-
   end
 end
