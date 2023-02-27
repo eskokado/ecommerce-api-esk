@@ -49,5 +49,18 @@ shared_examples "paginatable concern" do |factory_name|
         expect(paginated_records).to eq expected_records
       end
     end
+
+
+    context "when :page and :length are fulfilled and does not fit records size" do
+      let(:page) { 2 }
+      let(:length) { 30 }
+
+      it "does not return any records" do
+        paginated_records = described_class.paginate(page, length)
+        expect(paginated_records.count).to eq 0
+      end
+
+    end
   end
+
 end
