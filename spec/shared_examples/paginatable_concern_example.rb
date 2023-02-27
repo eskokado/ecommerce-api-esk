@@ -66,4 +66,17 @@ shared_examples "paginatable concern" do |factory_name|
       end
     end
   end
+
+  context "when records does not fit page size" do
+    let!(:records) { create_list(factory_name, 7) }
+
+    context "when :page and :length are empty" do
+      it "returns 7 records" do
+        paginated_records = described_class.paginate(nil, nil)
+        expect(paginated_records.count).to eq 7
+      end
+
+    end
+
+  end
 end
