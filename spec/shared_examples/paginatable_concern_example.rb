@@ -108,6 +108,13 @@ shared_examples "paginatable concern" do |factory_name|
         expect(paginated_records.count).to eq 2
       end
 
+      it "returns records from right page" do
+        paginated_records = described_class.paginate(page, length)
+        first_record_index = 5
+        last_record_index = 6
+        expected_records = described_class.all[first_record_index..last_record_index]
+        expect(paginated_records).to eq expected_records
+      end
     end
   end
 end
