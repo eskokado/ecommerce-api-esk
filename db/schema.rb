@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(version: 2023_02_19_150403) do
     t.string "name", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index "lower((name)::text)", name: "index_categories_on_lower_name", unique: true
   end
 
   create_table "coupons", force: :cascade do |t|
