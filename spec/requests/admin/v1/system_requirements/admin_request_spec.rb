@@ -63,6 +63,10 @@ RSpec.describe "Admin::V1::SystemRequirements as :admin", type: :request do
         expect(body['errors']['fields']).to have_key('name')
       end
 
+      it 'returns unprocessable_entity status' do
+        post url, headers: auth_header(user), params: system_requirement_invalid_params
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
     end
   end
 end
