@@ -10,7 +10,7 @@ module Admin::V1
       @system_requirements.save!
       render :show
     rescue
-      render json: { errors: { fields: @category.errors.messages } }, status: :unprocessable_entity
+      render json: { errors: { fields: @system_requirements.errors.messages } }, status: :unprocessable_entity
     end
 
     private

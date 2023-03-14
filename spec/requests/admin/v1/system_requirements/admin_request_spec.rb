@@ -44,5 +44,18 @@ RSpec.describe "Admin::V1::SystemRequirements as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "with invalid params" do
+      let(:system_requirement_invalid_params) do
+        { system_requirement: attributes_for(:system_requirement, name: nil) }.to_json
+      end
+
+      it 'does not add a new SystemRequirements' do
+        expect do
+          post url, headers: auth_header(user), params: system_requirement_invalid_params
+        end.to_not change(SystemRequirement, :count)
+      end
+
+    end
   end
 end
