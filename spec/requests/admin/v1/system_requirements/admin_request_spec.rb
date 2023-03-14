@@ -69,4 +69,41 @@ RSpec.describe "Admin::V1::SystemRequirements as :admin", type: :request do
       end
     end
   end
+
+  context "PATCH /system_requirements/:id" do
+    let(:system_requirement) { create(:system_requirement) }
+    let(:url) { "/admin/v1/system_requirements/#{system_requirement.id}" }
+
+    context "with valid params" do
+      let(:new_name) { 'My new SystemRequirement' }
+      let(:new_operational_system) { Faker::Computer.os }
+      let(:new_storage) { "6GB" }
+      let(:new_processor) { "AMD Ryzen 9" }
+      let(:new_memory) { "4GB" }
+      let(:new_video_board) { "N/S" }
+      let(:system_requirement_params) {
+        { system_requirement:
+            {
+              name: new_name,
+              operational_system: new_operational_system,
+              storage: new_storage,
+              processor: new_processor,
+              memory: new_memory,
+              video_board: new_video_board
+            }
+        }.to_json
+      }
+
+      it 'updates SystemRequirement' do
+        patch url, headers: auth_header(user), params: system_requirement_params
+        system_requirement.reload
+        expect(system_requirement.name).to eq new_name
+        expect(system_requirement.operational_system).to eq new_operational_system
+        expect(system_requirement.storage).to eq new_storage
+        expect(system_requirement.processor).to eq new_processor
+        expect(system_requirement.memory).to eq new_memory
+        expect(system_requirement.video_board).to eq new_video_board
+      end
+    end
+  end
 end
