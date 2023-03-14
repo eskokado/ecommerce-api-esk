@@ -149,6 +149,17 @@ RSpec.describe "Admin::V1::SystemRequirements as :admin", type: :request do
         expect(system_requirement.video_board).to eq old_video_board
       end
 
+      it 'returns error message' do
+        patch url, headers: auth_header(user), params: system_requirement_invalid_params
+        body = JSON.parse(response.body)
+        expect(body['errors']['fields']).to have_key('name')
+        expect(body['errors']['fields']).to have_key('operational_system')
+        expect(body['errors']['fields']).to have_key('storage')
+        expect(body['errors']['fields']).to have_key('processor')
+        expect(body['errors']['fields']).to have_key('memory')
+        expect(body['errors']['fields']).to have_key('video_board')
+      end
+
     end
   end
 end
