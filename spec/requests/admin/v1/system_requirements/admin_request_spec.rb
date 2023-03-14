@@ -104,6 +104,13 @@ RSpec.describe "Admin::V1::SystemRequirements as :admin", type: :request do
         expect(system_requirement.memory).to eq new_memory
         expect(system_requirement.video_board).to eq new_video_board
       end
+
+      it 'returns updated SystemRequirement' do
+        patch url, headers: auth_header(user), params: system_requirement_params
+        system_requirement.reload
+        expected_system_requirement = SystemRequirement.last.to_json(only: %i(id name operational_system storage processor memory video_board))
+        expect(response.body).to include_json(expected_system_requirement)
+      end
     end
   end
 end
