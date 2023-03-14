@@ -5,17 +5,17 @@ module Admin::V1
     end
 
     def create
-      @system_requirements = SystemRequirement.new
-      @system_requirements.attributes = system_requirements_params
-      @system_requirements.save!
+      @system_requirement = SystemRequirement.new
+      @system_requirement.attributes = system_requirement_params
+      @system_requirement.save!
       render :show
     rescue
-      render json: { errors: { fields: @system_requirements.errors.messages } }, status: :unprocessable_entity
+      render json: { errors: { fields: @system_requirement.errors.messages } }, status: :unprocessable_entity
     end
 
     private
 
-    def system_requirements_params
+    def system_requirement_params
       return {} unless params.has_key?(:system_requirement)
       params.require(:system_requirement).permit(:id, :name, :operational_system, :storage, :processor, :memory, :video_board)
     end

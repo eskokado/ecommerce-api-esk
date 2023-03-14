@@ -1,3 +1,3 @@
-json.system_requirements do
-  json.(@system_requirements, :id, :name, :operational_system, :storage, :processor, :memory, :video_board)
+json.system_requirement do
+  json.(@system_requirement, :id, :name, :operational_system, :storage, :processor, :memory, :video_board)
 end

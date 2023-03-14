@@ -24,23 +24,23 @@ RSpec.describe "Admin::V1::SystemRequirements as :admin", type: :request do
     let(:url) { "/admin/v1/system_requirements" }
 
     context "with valid params" do
-      let(:system_requirements_params) { { system_requirement: attributes_for(:system_requirement) }.to_json }
+      let(:system_requirement_params) { { system_requirement: attributes_for(:system_requirement) }.to_json }
 
-      it 'adds a new SystemRequirements' do
+      it 'adds a new SystemRequirement' do
         expect do
-          post url, headers: auth_header(user), params: system_requirements_params
+          post url, headers: auth_header(user), params: system_requirement_params
         end.to change(SystemRequirement, :count).by(1)
       end
 
 
-      it 'returns last added SystemRequirements' do
-        post url, headers: auth_header(user), params: system_requirements_params
+      it 'returns last added SystemRequirement' do
+        post url, headers: auth_header(user), params: system_requirement_params
         expected_system_requirement = SystemRequirement.last.to_json(only: %i(id name operational_system storage processor memory video_board))
         expect(response.body).to include_json(expected_system_requirement)
       end
 
       it 'returns success status' do
-        post url, headers: auth_header(user), params: system_requirements_params
+        post url, headers: auth_header(user), params: system_requirement_params
         expect(response).to have_http_status(:ok)
       end
     end
