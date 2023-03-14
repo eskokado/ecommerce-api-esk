@@ -56,6 +56,13 @@ RSpec.describe "Admin::V1::SystemRequirements as :admin", type: :request do
         end.to_not change(SystemRequirement, :count)
       end
 
+      it 'returns error message' do
+        post url, headers: auth_header(user), params: system_requirement_invalid_params
+
+        body = JSON.parse(response.body)
+        expect(body['errors']['fields']).to have_key('name')
+      end
+
     end
   end
 end
