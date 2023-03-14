@@ -117,5 +117,38 @@ RSpec.describe "Admin::V1::SystemRequirements as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "with invalid params" do
+      let(:system_requirement_invalid_params) {
+        { system_requirement:
+            {
+              name: nil,
+              operational_system: nil,
+              storage: nil,
+              processor: nil,
+              memory: nil,
+              video_board: nil
+            }
+        }.to_json
+      }
+
+      it 'does not update SystemRequirement' do
+        old_name = system_requirement.name
+        old_operational_system = system_requirement.operational_system
+        old_storage = system_requirement.storage
+        old_processor = system_requirement.processor
+        old_memory = system_requirement.memory
+        old_video_board = system_requirement.video_board
+        patch url, headers: auth_header(user), params: system_requirement_invalid_params
+        system_requirement.reload
+        expect(system_requirement.name).to eq old_name
+        expect(system_requirement.operational_system).to eq old_operational_system
+        expect(system_requirement.storage).to eq old_storage
+        expect(system_requirement.processor).to eq old_processor
+        expect(system_requirement.memory).to eq old_memory
+        expect(system_requirement.video_board).to eq old_video_board
+      end
+
+    end
   end
 end
