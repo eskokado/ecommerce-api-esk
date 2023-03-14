@@ -19,4 +19,18 @@ RSpec.describe "Admin::V1::SystemRequirements as :admin", type: :request do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  context "POST /system_requirements" do
+    let(:url) { "/admin/v1/system_requirements" }
+
+    context "with valid params" do
+      let(:system_requirements_params) { { system_requirement: attributes_for(:system_requirement) }.to_json }
+
+      it 'adds a new SystemRequirements' do
+        expect do
+          post url, headers: auth_header(user), params: system_requirements_params
+        end.to change(SystemRequirement, :count).by(1)
+      end
+    end
+  end
 end
