@@ -38,6 +38,11 @@ RSpec.describe "Admin::V1::SystemRequirements as :admin", type: :request do
         expected_system_requirement = SystemRequirement.last.to_json(only: %i(id name operational_system storage processor memory video_board))
         expect(response.body).to include_json(expected_system_requirement)
       end
+
+      it 'returns success status' do
+        post url, headers: auth_header(user), params: system_requirements_params
+        expect(response).to have_http_status(:ok)
+      end
     end
   end
 end
