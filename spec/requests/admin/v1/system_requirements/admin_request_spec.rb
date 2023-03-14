@@ -180,6 +180,11 @@ RSpec.describe "Admin::V1::SystemRequirements as :admin", type: :request do
         delete url, headers: auth_header(user)
         expect(response).to have_http_status(:no_content)
       end
+
+      it 'does not return any body content' do
+        delete url, headers: auth_header(user)
+        expect(body_json).to_not be_present
+      end
     end
   end
 end
