@@ -165,5 +165,16 @@ RSpec.describe "Admin::V1::SystemRequirements as :admin", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    context "DELETE /system_requirements/:id" do
+      let!(:system_requirement) { create(:system_requirement) }
+      let(:url) { "/admin/v1/system_requirements/#{system_requirement.id}" }
+
+      it 'removes SystemRequirement' do
+        expect do
+          delete url, headers: auth_header(user)
+        end.to change(SystemRequirement, :count).by(-1)
+      end
+    end
   end
 end
