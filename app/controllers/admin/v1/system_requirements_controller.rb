@@ -16,6 +16,13 @@ module Admin::V1
       save_system_requirement!
     end
 
+    def destroy
+      @system_requirement = SystemRequirement.find(params[:id])
+      @system_requirement.destroy!
+    rescue
+      render_error(fields: @category.errors.messages)
+    end
+
     private
 
     def system_requirement_params
