@@ -23,4 +23,10 @@ RSpec.describe "Admin V1 SystemRequirements without authentication", type: :requ
     include_examples "unauthenticated access"
   end
 
+  context "DELETE /system_requirements/:id" do
+    let!(:system_requirement) { create(:system_requirement) }
+    let(:url) { "/admin/v1/system_requirements/#{system_requirement.id}" }
+    before(:each) { delete url }
+    include_examples "unauthenticated access"
+  end
 end
