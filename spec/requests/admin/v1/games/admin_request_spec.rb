@@ -55,6 +55,12 @@ RSpec.describe "Admin::V1::Games as :admin", type: :request do
           post url, headers: auth_header(user), params: game_invalid_params
         end.to_not change(Game, :count)
       end
+
+      it 'returns error message' do
+        post url, headers: auth_header(user), params: game_invalid_params
+
+        expect(response.body).to include("é obrigatório" || "não pode ficar em branco")
+      end
     end
   end
 end
