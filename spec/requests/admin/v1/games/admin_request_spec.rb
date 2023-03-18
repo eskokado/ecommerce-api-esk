@@ -102,6 +102,11 @@ RSpec.describe "Admin::V1::Games as :admin", type: :request do
         expected_game = Game.last.to_json(only: %i(id mode release_date developer system_requirement_id))
         expect(response.body).to include_json(expected_game)
       end
+
+      it 'returns success status' do
+        patch url, headers: auth_header(user), params: game_params
+        expect(response).to have_http_status(:ok)
+      end
     end
   end
 end
