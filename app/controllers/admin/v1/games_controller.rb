@@ -10,6 +10,12 @@ module Admin::V1
       save_game!
     end
 
+    def update
+      @game = Game.find(params[:id])
+      @game.attributes = game_params
+      save_game!
+    end
+
     private
 
     def game_params
