@@ -95,6 +95,13 @@ RSpec.describe "Admin::V1::Games as :admin", type: :request do
         expect(game.developer).to eq new_developer
         expect(game.system_requirement).to eq new_system_requirement
       end
+
+      it 'returns updated Game' do
+        patch url, headers: auth_header(user), params: game_params
+        game.reload
+        expected_game = Game.last.to_json(only: %i(id mode release_date developer system_requirement_id))
+        expect(response.body).to include_json(expected_game)
+      end
     end
   end
 end
