@@ -16,6 +16,13 @@ module Admin::V1
       save_game!
     end
 
+    def destroy
+      @game = Game.find(params[:id])
+      @game.destroy!
+    rescue
+      render_error(fields: @game.errors.messages)
+    end
+
     private
 
     def game_params
