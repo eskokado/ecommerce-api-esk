@@ -19,4 +19,19 @@ RSpec.describe "Admin::V1::Games as :admin", type: :request do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  context "POST /games" do
+    let(:url) { "/admin/v1/games" }
+
+    context "with valid params" do
+      let(:system_requirement) { create(:system_requirement)}
+      let(:game_params) { { game: attributes_for(:game, system_requirement_id: system_requirement.id) }.to_json }
+
+      it 'adds a new Game' do
+        expect do
+          post url, headers: auth_header(user), params: game_params
+        end.to change(Game, :count).by(1)
+      end
+    end
+  end
 end
