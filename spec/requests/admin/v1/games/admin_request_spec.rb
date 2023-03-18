@@ -150,5 +150,16 @@ RSpec.describe "Admin::V1::Games as :admin", type: :request do
       end
 
     end
+
+    context "DELETE /games/:id" do
+      let!(:game) { create(:game) }
+      let(:url) { "/admin/v1/games/#{game.id}" }
+
+      it 'removes Game' do
+        expect do
+          delete url, headers: auth_header(user)
+        end.to change(Game, :count).by(-1)
+      end
+    end
   end
 end
