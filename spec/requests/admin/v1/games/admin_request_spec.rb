@@ -135,6 +135,15 @@ RSpec.describe "Admin::V1::Games as :admin", type: :request do
         expect(game.system_requirement_id).to eq old_system_requirement_id
       end
 
+      it 'returns error message' do
+        patch url, headers: auth_header(user), params: game_invalid_params
+        body = JSON.parse(response.body)
+        expect(body['errors']['fields']).to have_key('mode')
+        expect(body['errors']['fields']).to have_key('release_date')
+        expect(body['errors']['fields']).to have_key('developer')
+        expect(body['errors']['fields']).to have_key('system_requirement')
+      end
+
     end
   end
 end
