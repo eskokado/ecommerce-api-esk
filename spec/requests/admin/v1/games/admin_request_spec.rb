@@ -68,4 +68,33 @@ RSpec.describe "Admin::V1::Games as :admin", type: :request do
       end
     end
   end
+
+  context "PATCH /games/:id" do
+    let(:game) { create(:game) }
+    let(:url) { "/admin/v1/games/#{game.id}" }
+
+    context "with valid params" do
+      let(:new_system_requirement) { create(:system_requirement)}
+      let(:new_release_date) { Faker::Date.between(from: '2023-01-01', to: '2023-03-18') }
+      let(:new_developer) { Faker::Name.name }
+
+      let(:game_params) {
+        { game:
+            {
+              release_date: new_release_date,
+              developer: new_developer,
+              system_requirement_id: new_system_requirement.id
+            }
+        }.to_json
+      }
+
+      it 'updates Game' do
+        patch url, headers: auth_header(user), params: game_params
+        game.reload
+        expect(game.release_date).to eq new_release_date
+        expect(game.developer).to eq new_developer
+        expect(game.system_requirement).to eq new_system_requirement
+      end
+    end
+  end
 end
