@@ -32,6 +32,12 @@ RSpec.describe "Admin::V1::Games as :admin", type: :request do
           post url, headers: auth_header(user), params: game_params
         end.to change(Game, :count).by(1)
       end
+
+      it 'returns last added Game' do
+        post url, headers: auth_header(user), params: game_params
+        expected_game = Game.last.to_json(only: %i(id mode release_date developer system_requirement_id))
+        expect(response.body).to include_json(expected_game)
+      end
     end
   end
 end
