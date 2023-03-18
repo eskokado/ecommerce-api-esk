@@ -61,6 +61,11 @@ RSpec.describe "Admin::V1::Games as :admin", type: :request do
 
         expect(response.body).to include("é obrigatório" || "não pode ficar em branco")
       end
+
+      it 'returns unprocessable_entity status' do
+        post url, headers: auth_header(user), params: game_invalid_params
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
     end
   end
 end
