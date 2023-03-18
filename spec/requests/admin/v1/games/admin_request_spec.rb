@@ -44,5 +44,17 @@ RSpec.describe "Admin::V1::Games as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "with invalid params" do
+      let(:game_invalid_params) do
+        { game: attributes_for(:game, mode: nil, release_date: nil, developer: nil, system_requirement_id: nil) }.to_json
+      end
+
+      it 'does not add a new Game' do
+        expect do
+          post url, headers: auth_header(user), params: game_invalid_params
+        end.to_not change(Game, :count)
+      end
+    end
   end
 end
