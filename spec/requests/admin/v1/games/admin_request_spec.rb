@@ -108,5 +108,33 @@ RSpec.describe "Admin::V1::Games as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "with invalid params" do
+
+      let(:game_invalid_params) {
+        { game:
+            {
+              mode: nil,
+              release_date: nil,
+              developer: nil,
+              system_requirement_id: nil
+            }
+        }.to_json
+      }
+
+      it 'does not update Game' do
+        old_mode = game.mode
+        old_release_date = game.release_date
+        old_developer = game.developer
+        old_system_requirement_id = game.system_requirement_id
+        patch url, headers: auth_header(user), params: game_invalid_params
+        game.reload
+        expect(game.mode).to eq old_mode
+        expect(game.release_date).to eq old_release_date
+        expect(game.developer).to eq old_developer
+        expect(game.system_requirement_id).to eq old_system_requirement_id
+      end
+
+    end
   end
 end
