@@ -13,5 +13,10 @@ RSpec.describe "Admin::V1::Coupons as :admin", type: :request do
 
       expect(response.body).to include_json(coupons.to_json(only: %i(id name code status discount_value max_use due_date)))
     end
+
+    it "returns success status" do
+      get url, headers: auth_header(user)
+      expect(response).to have_http_status(:ok)
+    end
   end
 end
