@@ -21,7 +21,7 @@ module Admin::V1
       @coupon.save!
       render :show
     rescue
-      render json: { errors: { fields: @game.errors.messages } }, status: :unprocessable_entity
+      render json: { errors: { fields: @coupon.errors.messages } }, status: :unprocessable_entity
     end
   end
 end
