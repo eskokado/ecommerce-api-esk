@@ -43,5 +43,17 @@ RSpec.describe "Admin::V1::Coupons as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "with invalid params" do
+      let(:coupon_invalid_params) do
+        { coupon: attributes_for(:coupon, name: nil, code: nil, status: nil, discount_value: nil, max_use: nil, due_date: nil) }.to_json
+      end
+
+      it 'does not add a new Coupon' do
+        expect do
+          post url, headers: auth_header(user), params: coupon_invalid_params
+        end.to_not change(Coupon, :count)
+      end
+    end
   end
 end
