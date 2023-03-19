@@ -54,6 +54,18 @@ RSpec.describe "Admin::V1::Coupons as :admin", type: :request do
           post url, headers: auth_header(user), params: coupon_invalid_params
         end.to_not change(Coupon, :count)
       end
+
+      it 'returns error message' do
+        post url, headers: auth_header(user), params: coupon_invalid_params
+
+        body = JSON.parse(response.body)
+        expect(body['errors']['fields']).to have_key('name')
+        expect(body['errors']['fields']).to have_key('code')
+        expect(body['errors']['fields']).to have_key('status')
+        expect(body['errors']['fields']).to have_key('discount_value')
+        expect(body['errors']['fields']).to have_key('max_use')
+        expect(body['errors']['fields']).to have_key('due_date')
+      end
     end
   end
 end
