@@ -152,6 +152,11 @@ RSpec.describe "Admin::V1::Coupons as :admin", type: :request do
         expect(body['errors']['fields']).to have_key('max_use')
         expect(body['errors']['fields']).to have_key('due_date')
       end
+
+      it 'returns unprocessable_entity status' do
+        patch url, headers: auth_header(user), params: coupon_invalid_params
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
     end
   end
 end
