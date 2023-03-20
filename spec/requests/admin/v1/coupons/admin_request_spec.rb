@@ -119,5 +119,28 @@ RSpec.describe "Admin::V1::Coupons as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "with invalid params" do
+      let(:coupon_invalid_params) do
+        { coupon: attributes_for(:coupon, name: nil, code: nil, status: nil, discount_value: nil, max_use: nil, due_date: nil) }.to_json
+      end
+
+      it 'does not update Coupon' do
+        old_name = coupon.name
+        old_code = coupon.code
+        old_status = coupon.status
+        old_discount_value = coupon.discount_value
+        old_max_use = coupon.max_use
+        old_due_date = coupon.due_date
+        patch url, headers: auth_header(user), params: coupon_invalid_params
+        coupon.reload
+        expect(coupon.name).to eq old_name
+        expect(coupon.code).to eq old_code
+        expect(coupon.status).to eq old_status
+        expect(coupon.discount_value).to eq old_discount_value
+        expect(coupon.max_use).to eq old_max_use
+        expect(coupon.due_date.as_json).to eq old_due_date.as_json
+      end
+    end
   end
 end
