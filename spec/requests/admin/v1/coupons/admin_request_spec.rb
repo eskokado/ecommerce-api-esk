@@ -105,6 +105,14 @@ RSpec.describe "Admin::V1::Coupons as :admin", type: :request do
         expect(coupon.max_use).to eq new_max_use
         expect(coupon.due_date.as_json).to eq new_due_date.as_json
       end
+
+      it 'returns updated Coupon' do
+        patch url, headers: auth_header(user), params: coupon_params
+        coupon.reload
+        expected_coupon = coupon.as_json(only: %i(id name code status discount_value max_use due_date))
+        body = JSON.parse(response.body)
+        expect(body['coupon']).to eq expected_coupon
+      end
     end
   end
 end
