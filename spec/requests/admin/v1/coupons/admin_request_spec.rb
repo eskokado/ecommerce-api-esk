@@ -159,4 +159,15 @@ RSpec.describe "Admin::V1::Coupons as :admin", type: :request do
       end
     end
   end
+
+  context "DELETE /categories/:id" do
+    let!(:coupon) { create(:coupon) }
+    let(:url) { "/admin/v1/coupons/#{coupon.id}" }
+
+    it 'removes Coupon' do
+      expect do
+        delete url, headers: auth_header(user)
+      end.to change(Coupon, :count).by(-1)
+    end
+  end
 end
