@@ -141,6 +141,17 @@ RSpec.describe "Admin::V1::Coupons as :admin", type: :request do
         expect(coupon.max_use).to eq old_max_use
         expect(coupon.due_date.as_json).to eq old_due_date.as_json
       end
+
+      it 'returns error message' do
+        patch url, headers: auth_header(user), params: coupon_invalid_params
+        body = JSON.parse(response.body)
+        expect(body['errors']['fields']).to have_key('name')
+        expect(body['errors']['fields']).to have_key('code')
+        expect(body['errors']['fields']).to have_key('status')
+        expect(body['errors']['fields']).to have_key('discount_value')
+        expect(body['errors']['fields']).to have_key('max_use')
+        expect(body['errors']['fields']).to have_key('due_date')
+      end
     end
   end
 end
