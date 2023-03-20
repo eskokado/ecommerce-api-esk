@@ -73,4 +73,38 @@ RSpec.describe "Admin::V1::Coupons as :admin", type: :request do
       end
     end
   end
+
+  context "PATCH /coupons/:id" do
+    let(:coupon) { create(:coupon) }
+    let(:url) { "/admin/v1/coupons/#{coupon.id}" }
+
+    context "with valid params" do
+      let(:new_name) { 'My new Coupon' }
+      let(:new_code) { Faker::Commerce.unique.promotion_code(digits: 4) }
+      let(:new_status) { :active }
+      let(:new_discount_value) { 25 }
+      let(:new_max_use) { 3 }
+      let(:new_due_date) { 3.days.from_now }
+
+      let(:coupon_params) { { coupon: {
+        name: new_name,
+        code: new_code,
+        status: new_status,
+        discount_value: new_discount_value,
+        max_use: new_max_use,
+        due_date: new_due_date
+      } }.to_json }
+
+      it 'updates Coupon' do
+        patch url, headers: auth_header(user), params: coupon_params
+        coupon.reload
+        expect(coupon.name).to eq new_name
+        expect(coupon.code).to eq new_code
+        expect(coupon.status).to eq new_status.as_json
+        expect(coupon.discount_value).to eq new_discount_value
+        expect(coupon.max_use).to eq new_max_use
+        expect(coupon.due_date.as_json).to eq new_due_date.as_json
+      end
+    end
+  end
 end
