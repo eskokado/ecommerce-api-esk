@@ -16,6 +16,13 @@ module Admin::V1
       save_coupon!
     end
 
+    def destroy
+      @coupon = Coupon.find(params[:id])
+      @coupon.destroy!
+    rescue
+      render_error(fields: @coupon.errors.messages)
+    end
+
     private
 
     def coupon_params
