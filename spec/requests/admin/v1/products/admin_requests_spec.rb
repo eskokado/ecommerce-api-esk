@@ -49,4 +49,33 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  context "POST /products" do
+    let(:url) { "/admin/v1/products" }
+
+    context "with valid params" do
+      let(:product_params) { { product: attributes_for(:product) }.to_json }
+
+      it 'adds a new Product' do
+        expect do
+          post url, headers: auth_header(user), params: product_params
+        end.to change(Product, :count).by(1)
+      end
+
+      it 'returns last added Product' do
+        post url, headers: auth_header(user), params: product_params
+        expected_product = Product.last.to_json(
+          only: %i[id name description price],
+          include: { game: { only: %i[id mode release_date developer] }, categories: { only: %i[id name] } }
+        )
+        expect(response.body).to include_json(expected_product)
+      end
+
+      it 'returns success status' do
+        post url, headers: auth_header(user), params: product_params
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+  end
 end
