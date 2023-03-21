@@ -71,5 +71,10 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
         expect(response.body).to include_json(expected_product)
       end
     end
+
+    it 'returns success status' do
+      post url, headers: auth_header(user), params: product_params
+      expect(response).to have_http_status(:ok)
+    end
   end
 end
