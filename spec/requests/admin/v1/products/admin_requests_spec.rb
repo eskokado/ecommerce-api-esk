@@ -62,6 +62,14 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
         end.to change(Product, :count).by(1)
       end
 
+      it 'returns last added Product' do
+        post url, headers: auth_header(user), params: product_params
+        expected_product = Product.last.to_json(
+          only: %i[id name description price],
+          include: { game: { only: %i[id mode release_date developer] }, categories: { only: %i[id name] } }
+        )
+        expect(response.body).to include_json(expected_product)
+      end
     end
   end
 end
