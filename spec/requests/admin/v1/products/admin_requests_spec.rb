@@ -19,7 +19,6 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
         }
       )
 
-      expect(response).to have_http_status(:ok)
       expect(response.headers['Content-Type']).to eq('application/json; charset=utf-8')
       expect(JSON.parse(response.body)).to be_an(Array)
       expect(JSON.parse(response.body)).not_to be_empty
@@ -43,6 +42,11 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
       # Verifica se o primeiro item do array de 'categories' contém as chaves 'id' e 'name'
       expect(first_item['categories'].first).to have_key('id')
       expect(first_item['categories'].first).to have_key('name')
+    end
+
+    it "returns success status" do
+      get url, headers: auth_header(user)
+      expect(response).to have_http_status(:ok)
     end
   end
 end
