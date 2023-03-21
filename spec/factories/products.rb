@@ -7,6 +7,7 @@ FactoryBot.define do
 
     after :build do |product|
       product.productable = create(:game)
+      product.categories << create(:category)
     end
   end
 end
