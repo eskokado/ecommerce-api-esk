@@ -1,7 +1,5 @@
 json.array! @products do |product|
-  json.extract! product, :id, :name, :description, :price
-
-  json.image_url url_for(product.image) if product.image.attached?
+  json.extract! product, :id, :name, :description, :price, :image
 
   json.productable do
     if product.productable_type == "Game"

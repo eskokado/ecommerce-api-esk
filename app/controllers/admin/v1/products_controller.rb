@@ -12,18 +12,18 @@ module Admin::V1
 
     private
 
-    # def product_params
-    #   params.require(:product).permit(:name, :description, :price, :image, category_ids: [], game_attributes: [:id, :mode, :release_date, :developer])
-    # end
-
     def product_params
-      params.require(:product).permit(:name, :description, :price, :image, :productable_type, productable_attributes: [:mode, :release_date, :developer], category_ids: [])
+      params.require(:product).permit(
+        :name, :description, :price, :image, :productable_id, :productable_type,
+        productable_attributes: [:mode, :release_date, :developer],
+        category_ids: []
+      )
     end
-
     def save_product!
       @product.save!
       render :show
     rescue
+      # render json: { error: @product }
       render json: { errors: { fields: @product.errors.messages } }, status: :unprocessable_entity
     end
   end
