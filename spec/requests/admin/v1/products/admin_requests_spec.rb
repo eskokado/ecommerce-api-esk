@@ -14,8 +14,8 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
       expected_response = products.as_json(
         only: %i(id name description price image),
         include: {
-          productable: { only: %i(id mode release_date developer)},
-          categories: { only: %i(id name)}
+          productable: { only: %i(id mode release_date developer) },
+          categories: { only: %i(id name) }
         }
       )
 
@@ -54,7 +54,8 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
     let(:url) { "/admin/v1/products" }
 
     context "with valid params" do
-      let(:product_params) { { product: attributes_for(:product) }.to_json }
+      let(:game) { create(:game) }
+      let(:product_params) { { product: attributes_for(:product, productable_id: game.id, productable_type: "Game") }.to_json }
 
       it 'adds a new Product' do
         expect do
@@ -64,11 +65,11 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
 
       it 'returns last added Product' do
         post url, headers: auth_header(user), params: product_params
-        expected_product = Product.last.to_json(
-          only: %i[id name description price],
-          include: { game: { only: %i[id mode release_date developer] }, categories: { only: %i[id name] } }
-        )
-        expect(response.body).to include_json(expected_product)
+        expected_product = { product: Product.last.reload.as_json(
+          only: %i[id name description price image],
+          include: { productable: { only: %i[id mode release_date developer] }, categories: { only: %i[id name] } }
+        ) }.stringify_keys
+        expect(JSON.parse(response.body)).to eq(expected_product)
       end
 
       it 'returns success status' do
