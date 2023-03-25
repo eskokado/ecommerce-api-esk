@@ -209,5 +209,10 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
         delete url, headers: auth_header(user)
       end.to change(Product, :count).by(-1)
     end
+
+    it 'returns success status' do
+      delete url, headers: auth_header(user)
+      expect(response).to have_http_status(:no_content)
+    end
   end
 end
