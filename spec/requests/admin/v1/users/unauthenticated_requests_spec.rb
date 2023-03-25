@@ -9,4 +9,10 @@ RSpec.describe "Admin V1 Users without authentication", type: :request do
     before(:each) { get url }
     include_examples "unauthenticated access"
   end
+
+  context "POST /users" do
+    let(:url) { "/admin/v1/users" }
+    before(:each) { post url }
+    include_examples "unauthenticated access"
+  end
 end
