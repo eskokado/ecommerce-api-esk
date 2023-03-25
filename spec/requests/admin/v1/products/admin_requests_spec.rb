@@ -78,5 +78,23 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
       end
     end
 
+    context "with invalid params" do
+      let(:product_invalid_params) do
+        { product: attributes_for(
+            :product,
+            name: nil,
+            description: nil,
+            price: nil,
+            image: nil
+          )
+        }.to_json
+      end
+
+      it 'does not add a new Product' do
+        expect do
+          post url, headers: auth_header(user), params: product_invalid_params
+        end.to_not change(Product, :count)
+      end
+    end
   end
 end
