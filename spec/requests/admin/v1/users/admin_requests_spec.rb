@@ -44,5 +44,17 @@ RSpec.describe "Admin::V1::Users as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "with invalid params" do
+      let(:user_invalid_params) do
+        { user: attributes_for(:user, name: nil, email: nil, password: nil, password_confirmation: nil, profile: nil) }.to_json
+      end
+
+      it 'does not add a new User' do
+        expect do
+          post url, headers: auth_header(user), params: user_invalid_params
+        end.to change(User, :count).by(1)
+      end
+    end
   end
 end
