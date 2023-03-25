@@ -112,5 +112,36 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    context "PATCH /products/:id" do
+      let(:product) { create(:product) }
+      let(:url) { "/admin/v1/products/#{product.id}" }
+
+      context "with valid params" do
+        let(:game) { create(:game) }
+        let(:new_name) { 'My new Product' }
+        let(:new_description) { 'My new Description Product' }
+        let(:new_price) { 150.0 }
+        let(:new_image) { 'new_image.png' }
+        let(:product_params) { { product: {
+          name: new_name,
+          description: new_description,
+          price: new_price,
+          image: new_image,
+          productable_id: game.id,
+          productable_type: "Game"
+        } }.to_json }
+
+        it 'updates Product' do
+          patch url, headers: auth_header(user), params: product_params
+          product.reload
+          expect(product.name).to eq new_name
+          expect(product.description).to eq new_description
+          expect(product.price).to eq new_price
+          expect(product.image).to eq new_image
+          expect(product.productable_id).to eq game.id
+        end
+      end
+    end
   end
 end
