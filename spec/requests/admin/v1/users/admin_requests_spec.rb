@@ -72,4 +72,24 @@ RSpec.describe "Admin::V1::Users as :admin", type: :request do
 
     end
   end
+
+  context "PATCH /users/:id" do
+    let(:user_patch) { create(:user) }
+    let(:url) { "/admin/v1/users/#{user_patch.id}" }
+
+    context "with valid params" do
+      let(:new_name) { 'My new User' }
+      let(:new_email) { 'update@email.com' }
+      let(:new_profile) { "client" }
+      let(:user_params) { { user: { name: new_name, email: new_email, profile: new_profile } }.to_json }
+
+      it 'updates User' do
+        patch url, headers: auth_header(user), params: user_params
+        user = User.find(user_patch.id)
+        expect(user.name).to eq new_name
+        expect(user.email).to eq new_email
+        expect(user.profile).to eq new_profile
+      end
+    end
+  end
 end
