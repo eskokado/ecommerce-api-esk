@@ -136,4 +136,16 @@ RSpec.describe "Admin::V1::Users as :admin", type: :request do
       end
     end
   end
+
+  context "DELETE /users/:id" do
+    let!(:user_delete) { create(:user) }
+    let(:url) { "/admin/v1/users/#{user_delete.id}" }
+
+    it 'removes User' do
+      expect do
+        delete url, headers: auth_header(user)
+      end.to change(User, :count).by(0)
+    end
+
+  end
 end
