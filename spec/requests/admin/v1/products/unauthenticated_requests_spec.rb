@@ -15,4 +15,11 @@ RSpec.describe "Admin V1 Products without authentication", type: :request do
     before(:each) { post url }
     include_examples "unauthenticated access"
   end
+
+  context "PATCH /products/:id" do
+    let(:product) { create(:product) }
+    let(:url) { "/admin/v1/products/#{product.id}" }
+    before(:each) { patch url }
+    include_examples "unauthenticated access"
+  end
 end

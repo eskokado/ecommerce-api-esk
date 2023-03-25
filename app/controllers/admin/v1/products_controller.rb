@@ -10,6 +10,12 @@ module Admin::V1
       save_product!
     end
 
+    def update
+      @product = Product.find(params[:id])
+      @product.attributes = product_params
+      save_product!
+    end
+
     private
 
     def product_params
