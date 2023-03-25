@@ -10,4 +10,10 @@ RSpec.describe "Admin V1 Users as :client", type: :request do
     include_examples "forbidden access"
   end
 
+  context "POST /users" do
+    let(:url) { "/admin/v1/users" }
+    before(:each) { post url, headers: auth_header(user) }
+    include_examples "forbidden access"
+  end
+
 end
