@@ -16,6 +16,13 @@ module Admin::V1
       save_user!
     end
 
+    def destroy
+      @user = User.find(params[:id])
+      @user.destroy!
+    rescue
+      render_error(fields: @user.errors.messages)
+    end
+
     private
 
     def user_params
