@@ -39,6 +39,10 @@ RSpec.describe "Admin::V1::Users as :admin", type: :request do
         expect(response.body).to include_json(expected_user)
       end
 
+      it 'returns success status' do
+        post url, headers: auth_header(user), params: user_params
+        expect(response).to have_http_status(:ok)
+      end
     end
   end
 end
