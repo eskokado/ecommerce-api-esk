@@ -33,6 +33,12 @@ RSpec.describe "Admin::V1::Users as :admin", type: :request do
         end.to change(User, :count).by(1)
       end
 
+      it 'returns last added User' do
+        post url, headers: auth_header(user), params: user_params
+        expected_user = User.last.to_json(only: %i(id name email profile))
+        expect(response.body).to include_json(expected_user)
+      end
+
     end
   end
 end
