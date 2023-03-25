@@ -98,6 +98,11 @@ RSpec.describe "Admin::V1::Users as :admin", type: :request do
         body = JSON.parse(response.body)
         expect(body['user']).to eq expected_user
       end
+
+      it 'returns success status' do
+        patch url, headers: auth_header(user), params: user_params
+        expect(response).to have_http_status(:ok)
+      end
     end
   end
 end
