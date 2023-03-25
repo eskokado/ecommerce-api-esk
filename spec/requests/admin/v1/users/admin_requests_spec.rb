@@ -104,5 +104,23 @@ RSpec.describe "Admin::V1::Users as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "with invalid params" do
+      let(:user_invalid_params) do
+        { user: attributes_for(:user, name: nil, email: nil, profile: nil) }.to_json
+      end
+
+      it 'does not update User' do
+        user = User.find(user_patch.id)
+        old_name = user.name
+        old_email = user.email
+        old_profile = user.profile
+        patch url, headers: auth_header(user), params: user_invalid_params
+        user = User.find(user_patch.id)
+        expect(user.name).to eq old_name
+        expect(user.email).to eq old_email
+        expect(user.profile).to eq old_profile
+      end
+    end
   end
 end
