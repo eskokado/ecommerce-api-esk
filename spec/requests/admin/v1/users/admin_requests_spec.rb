@@ -20,4 +20,19 @@ RSpec.describe "Admin::V1::Users as :admin", type: :request do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  context "POST /users" do
+    let(:url) { "/admin/v1/users" }
+
+    context "with valid params" do
+      let(:user_params) { { user: attributes_for(:user) }.to_json }
+
+      it 'adds a new User' do
+        expect do
+          post url, headers: auth_header(user), params: user_params
+        end.to change(User, :count).by(1)
+      end
+
+    end
+  end
 end
