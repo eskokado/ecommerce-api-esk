@@ -121,6 +121,14 @@ RSpec.describe "Admin::V1::Users as :admin", type: :request do
         expect(user.email).to eq old_email
         expect(user.profile).to eq old_profile
       end
+
+      it 'returns error message' do
+        patch url, headers: auth_header(user), params: user_invalid_params
+        body = JSON.parse(response.body)
+        expect(body['errors']['fields']).to have_key('name')
+        expect(body['errors']['fields']).to have_key('email')
+        expect(body['errors']['fields']).to have_key('profile')
+      end
     end
   end
 end
