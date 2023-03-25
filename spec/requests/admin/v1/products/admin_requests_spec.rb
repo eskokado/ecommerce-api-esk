@@ -163,7 +163,8 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
           name: nil,
           description: nil,
           price: nil,
-          image: nil
+          image: nil,
+          productable_id: nil
         } }.to_json }
 
         it 'does not update Product' do
@@ -179,6 +180,16 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
           expect(product.price).to eq old_price
           expect(product.image).to eq old_image
           expect(product.productable_id).to eq old_productable_id
+        end
+
+        it 'returns error message' do
+          patch url, headers: auth_header(user), params: product_invalid_params
+          body = JSON.parse(response.body)
+          expect(body['errors']['fields']).to have_key('name')
+          expect(body['errors']['fields']).to have_key('description')
+          expect(body['errors']['fields']).to have_key('price')
+          expect(body['errors']['fields']).to have_key('image')
+          expect(body['errors']['fields']).to have_key('productable')
         end
       end
     end
