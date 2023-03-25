@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       resources :games
       resources :coupons
       resources :products
+      resources :users
     end
   end
 
