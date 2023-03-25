@@ -157,6 +157,30 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
           expect(response).to have_http_status(:ok)
         end
       end
+
+      context "with invalid params" do
+        let(:product_invalid_params) { { product: {
+          name: nil,
+          description: nil,
+          price: nil,
+          image: nil
+        } }.to_json }
+
+        it 'does not update Product' do
+          old_name = product.name
+          old_description = product.description
+          old_price = product.price
+          old_image = product.image
+          old_productable_id = product.productable_id
+          patch url, headers: auth_header(user), params: product_invalid_params
+          product.reload
+          expect(product.name).to eq old_name
+          expect(product.description).to eq old_description
+          expect(product.price).to eq old_price
+          expect(product.image).to eq old_image
+          expect(product.productable_id).to eq old_productable_id
+        end
+      end
     end
   end
 end
