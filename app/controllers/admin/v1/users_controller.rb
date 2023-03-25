@@ -10,6 +10,12 @@ module Admin::V1
       save_user!
     end
 
+    def update
+      @user = User.find(params[:id])
+      @user.attributes = user_params
+      save_user!
+    end
+
     private
 
     def user_params

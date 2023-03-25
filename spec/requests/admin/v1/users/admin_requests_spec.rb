@@ -72,4 +72,68 @@ RSpec.describe "Admin::V1::Users as :admin", type: :request do
 
     end
   end
+
+  context "PATCH /users/:id" do
+    let(:user_patch) { create(:user) }
+    let(:url) { "/admin/v1/users/#{user_patch.id}" }
+
+    context "with valid params" do
+      let(:new_name) { 'My new User' }
+      let(:new_email) { 'update@email.com' }
+      let(:new_profile) { "client" }
+      let(:user_params) { { user: { name: new_name, email: new_email, profile: new_profile } }.to_json }
+
+      it 'updates User' do
+        patch url, headers: auth_header(user), params: user_params
+        user = User.find(user_patch.id)
+        expect(user.name).to eq new_name
+        expect(user.email).to eq new_email
+        expect(user.profile).to eq new_profile
+      end
+
+      it 'returns updated User' do
+        patch url, headers: auth_header(user), params: user_params
+        user = User.find(user_patch.id)
+        expected_user = user.as_json(only: %i(id name email profile))
+        body = JSON.parse(response.body)
+        expect(body['user']).to eq expected_user
+      end
+
+      it 'returns success status' do
+        patch url, headers: auth_header(user), params: user_params
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "with invalid params" do
+      let(:user_invalid_params) do
+        { user: attributes_for(:user, name: nil, email: nil, profile: nil) }.to_json
+      end
+
+      it 'does not update User' do
+        user = User.find(user_patch.id)
+        old_name = user.name
+        old_email = user.email
+        old_profile = user.profile
+        patch url, headers: auth_header(user), params: user_invalid_params
+        user = User.find(user_patch.id)
+        expect(user.name).to eq old_name
+        expect(user.email).to eq old_email
+        expect(user.profile).to eq old_profile
+      end
+
+      it 'returns error message' do
+        patch url, headers: auth_header(user), params: user_invalid_params
+        body = JSON.parse(response.body)
+        expect(body['errors']['fields']).to have_key('name')
+        expect(body['errors']['fields']).to have_key('email')
+        expect(body['errors']['fields']).to have_key('profile')
+      end
+
+      it 'returns unprocessable_entity status' do
+        patch url, headers: auth_header(user), params: user_invalid_params
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+  end
 end
