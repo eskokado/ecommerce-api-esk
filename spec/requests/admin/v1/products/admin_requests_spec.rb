@@ -141,6 +141,16 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
           expect(product.image).to eq new_image
           expect(product.productable_id).to eq game.id
         end
+
+        it 'returns updated Product' do
+          patch url, headers: auth_header(user), params: product_params
+          product.reload
+          expected_product = { product: Product.last.reload.as_json(
+            only: %i[id name description price image],
+            include: { productable: { only: %i[id mode release_date developer] }, categories: { only: %i[id name] } }
+          ) }.stringify_keys
+          expect(JSON.parse(response.body)).to eq(expected_product)
+        end
       end
     end
   end
