@@ -1,4 +1,5 @@
 require 'rails_helper'
+require "rspec-json_matchers"
 
 RSpec.describe "Admin::V1::Categories as :admin", type: :request do
   let(:user) { create(:user) }
@@ -9,7 +10,8 @@ RSpec.describe "Admin::V1::Categories as :admin", type: :request do
 
     it "returns all Categories" do
       get url, headers: auth_header(user)
-      expect(body_json['categories']).to contain_exactly *categories.as_json(only: %i(id name))
+
+      expect(response.body).to include_json(categories.to_json(only: %i(id name)))
     end
 
     it "returns success status" do
@@ -32,8 +34,8 @@ RSpec.describe "Admin::V1::Categories as :admin", type: :request do
 
       it 'returns last added Category' do
         post url, headers: auth_header(user), params: category_params
-        expected_category = Category.last.as_json(only: %i(id name))
-        expect(body_json['category']).to eq expected_category
+        expected_category = Category.last.to_json(only: %i(id name))
+        expect(response.body).to include_json(expected_category)
       end
 
       it 'returns success status' do

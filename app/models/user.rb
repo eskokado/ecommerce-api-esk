@@ -8,6 +8,7 @@ class User < ActiveRecord::Base
   include DeviseTokenAuth::Concerns::User
 
   validates :name, presence: true
+  validates :email, presence: true
   validates :profile, presence: true
 
   enum profile: { admin: 0, client: 1 }
