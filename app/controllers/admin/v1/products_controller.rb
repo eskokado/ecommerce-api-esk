@@ -16,6 +16,13 @@ module Admin::V1
       save_product!
     end
 
+    def destroy
+      @product = Product.find(params[:id])
+      @product.destroy!
+    rescue
+      render_error(fields: @product.errors.messages)
+    end
+
     private
 
     def product_params

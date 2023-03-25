@@ -22,4 +22,11 @@ RSpec.describe "Admin V1 Products as :client", type: :request do
     before(:each) { patch url, headers: auth_header(user) }
     include_examples "forbidden access"
   end
+
+  context "DELETE /products/:id" do
+    let!(:product) { create(:product) }
+    let(:url) { "/admin/v1/products/#{product.id}" }
+    before(:each) { delete url, headers: auth_header(user) }
+    include_examples "forbidden access"
+  end
 end
