@@ -6,17 +6,13 @@ RSpec.describe "Admin::V1::Categories as :admin", type: :request do
 
   context "GET /categories" do
     let(:url) { "/admin/v1/categories" }
-    let!(:categories) { create_list(:category, 5) }
+    let!(:categories) { create_list(:category, 10) }
 
-    it "returns all Categories" do
-      get url, headers: auth_header(user)
-
-      expect(response.body).to include_json(categories.to_json(only: %i(id name)))
-    end
-
-    it "returns success status" do
-      get url, headers: auth_header(user)
-      expect(response).to have_http_status(:ok)
+    context "without any params" do
+      it "returns 10 Categories" do
+        get url, headers: auth_header(user)
+        expect(body_json['categories'].count).to eq 10
+      end
     end
   end
 
