@@ -71,6 +71,17 @@ RSpec.describe "Admin::V1::Categories as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "with order params" do
+      let(:order_params) { { order: { name: 'desc' } } }
+
+      it "returns ordered categories limited by default pagination" do
+        get url, headers: auth_header(user), params: order_params
+        categories.sort! { |a, b| b[:name] <=> a[:name]}
+        expected_categories = categories[0..9].as_json(only: %i(id name))
+        expect(body_json['categories']).to contain_exactly *expected_categories
+      end
+    end
   end
 
   context "POST /categories" do
