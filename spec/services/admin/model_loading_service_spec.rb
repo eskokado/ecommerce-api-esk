@@ -20,6 +20,14 @@ describe Admin::ModelLoadingService do
         result_categories = service.call
         expect(result_categories.count).to eq 4
       end
+
+      it "returns records following search, order and pagination" do
+        search_categories.sort! { |a, b| b[:name] <=> a[:name] }
+        service = described_class.new(Category.all, params)
+        result_categories = service.call
+        expected_categories = search_categories[4..7]
+        expect(result_categories).to contain_exactly *expected_categories
+      end
     end
   end
 end
