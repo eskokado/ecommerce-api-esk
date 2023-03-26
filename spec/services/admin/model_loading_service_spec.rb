@@ -29,5 +29,14 @@ describe Admin::ModelLoadingService do
         expect(result_categories).to contain_exactly *expected_categories
       end
     end
+
+    context "when params are not present" do
+      it "returns default :length pagination" do
+        service = described_class.new(Category.all, nil)
+        result_categories = service.call
+        expect(result_categories.count).to eq 10
+      end
+
+    end
   end
 end
