@@ -25,6 +25,24 @@ RSpec.describe "Admin::V1::Categories as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "with search[name] param" do
+      let!(:search_name_categories) do
+        categories = []
+        15.times { |n| categories << create(:category, name: "Search #{n + 1}") }
+        categories
+      end
+
+      let(:search_params) { { search: { name: "Search" } } }
+
+      it "returns only seached categories limited by default pagination" do
+        get url, headers: auth_header(user), params: search_params
+        expected_categories = search_name_categories[0..9].map do |category|
+          category.as_json(only: %i(id name))
+        end
+        expect(body_json['categories']).to contain_exactly *expected_categories
+      end
+    end
   end
 
   context "POST /categories" do
