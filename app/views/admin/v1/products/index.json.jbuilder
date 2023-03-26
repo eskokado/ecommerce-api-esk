@@ -1,5 +1,5 @@
 json.array! @products do |product|
-  json.extract! product, :id, :name, :description, :price, :image
+  json.extract! product, :id, :name, :description, :price, :image, :status
 
   json.productable do
     if product.productable_type == "Game"
