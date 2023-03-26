@@ -27,7 +27,7 @@ module Admin::V1
 
     def product_params
       params.require(:product).permit(
-        :name, :description, :price, :image, :productable_id, :productable_type,
+        :name, :description, :price, :image, :status, :productable_id, :productable_type,
         productable_attributes: [:mode, :release_date, :developer],
         category_ids: []
       )
