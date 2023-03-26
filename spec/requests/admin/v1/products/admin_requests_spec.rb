@@ -12,7 +12,7 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
       get url, headers: auth_header(user)
 
       expected_response = products.as_json(
-        only: %i(id name description price image),
+        only: %i(id name description price image status),
         include: {
           productable: { only: %i(id mode release_date developer) },
           categories: { only: %i(id name) }
@@ -25,10 +25,12 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
 
       # Testa os campos do primeiro item do array
       first_item = JSON.parse(response.body).first
+      puts response.body
       expect(first_item).to have_key('id')
       expect(first_item).to have_key('name')
       expect(first_item).to have_key('productable')
       expect(first_item).to have_key('categories')
+      expect(first_item).to have_key('status')
 
       # Verifica se o campo 'productable' é um hash que contém as chaves 'id' e 'mode'
       expect(first_item['productable']).to be_a(Hash)
@@ -66,7 +68,7 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
       it 'returns last added Product' do
         post url, headers: auth_header(user), params: product_params
         expected_product = { product: Product.last.reload.as_json(
-          only: %i[id name description price image],
+          only: %i[id name description price image status],
           include: { productable: { only: %i[id mode release_date developer] }, categories: { only: %i[id name] } }
         ) }.stringify_keys
         expect(JSON.parse(response.body)).to eq(expected_product)
@@ -147,7 +149,7 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
         patch url, headers: auth_header(user), params: product_params
         product.reload
         expected_product = { product: Product.last.reload.as_json(
-          only: %i[id name description price image],
+          only: %i[id name description price image status],
           include: { productable: { only: %i[id mode release_date developer] }, categories: { only: %i[id name] } }
         ) }.stringify_keys
         expect(JSON.parse(response.body)).to eq(expected_product)
