@@ -59,6 +59,12 @@ RSpec.describe "Admin::V1::Categories as :admin", type: :request do
         get url, headers: auth_header(user), params: pagination_params
         expect(body_json['categories'].count).to eq length
       end
+
+      it "returns categories limited by pagination" do
+        get url, headers: auth_header(user), params: pagination_params
+        expected_categories = categories[5..9].as_json(only: %i(id name))
+        expect(body_json['categories']).to contain_exactly *expected_categories
+      end
     end
   end
 
