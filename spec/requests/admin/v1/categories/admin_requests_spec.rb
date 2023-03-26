@@ -13,6 +13,12 @@ RSpec.describe "Admin::V1::Categories as :admin", type: :request do
         get url, headers: auth_header(user)
         expect(body_json['categories'].count).to eq 10
       end
+
+      it "returns 10 first Categories" do
+        get url, headers: auth_header(user)
+        expected_categories = categories[0..9].as_json(only: %i(id name))
+        expect(body_json['categories']).to contain_exactly *expected_categories
+      end
     end
   end
 
