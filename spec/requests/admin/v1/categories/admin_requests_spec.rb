@@ -48,6 +48,18 @@ RSpec.describe "Admin::V1::Categories as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "with pagination params" do
+      let(:page) { 2 }
+      let(:length) { 5 }
+
+      let(:pagination_params) { { page: page, length: length } }
+
+      it "returns records sized by :length" do
+        get url, headers: auth_header(user), params: pagination_params
+        expect(body_json['categories'].count).to eq length
+      end
+    end
   end
 
   context "POST /categories" do
