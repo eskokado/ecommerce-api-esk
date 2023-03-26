@@ -65,6 +65,11 @@ RSpec.describe "Admin::V1::Categories as :admin", type: :request do
         expected_categories = categories[5..9].as_json(only: %i(id name))
         expect(body_json['categories']).to contain_exactly *expected_categories
       end
+
+      it "returns success status" do
+        get url, headers: auth_header(user), params: pagination_params
+        expect(response).to have_http_status(:ok)
+      end
     end
   end
 
