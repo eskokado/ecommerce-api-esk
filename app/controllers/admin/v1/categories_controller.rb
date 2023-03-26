@@ -1,7 +1,7 @@
 module Admin::V1
   class CategoriesController < ApiController
     def index
-      @categories = Category.all
+      @categories = load_categories
     end
 
     def create
@@ -21,6 +21,11 @@ module Admin::V1
       @category.destroy!
     rescue
       render_error(fields: @category.errors.messages)
+    end
+
+    def load_categories
+      permitted = params.permit({ search: :name }, { order: {} }, :page, :length)
+      Admin::ModelLoadingService.new(Category.all, permitted).call
     end
 
     private
