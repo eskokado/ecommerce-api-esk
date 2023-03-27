@@ -171,6 +171,11 @@ RSpec.describe Admin::ProductSavingService, type: :model do
             }.to_not change(Product, :count)
           end
 
+          it "sets validation :errors" do
+            service = error_proof_call(product_params)
+            expect(service.errors).to have_key(:productable)
+          end
+
         end
       end
     end
