@@ -25,7 +25,6 @@ RSpec.describe "Admin::V1::Products as :admin", type: :request do
 
       # Testa os campos do primeiro item do array
       first_item = JSON.parse(response.body).first
-      puts response.body
       expect(first_item).to have_key('id')
       expect(first_item).to have_key('name')
       expect(first_item).to have_key('productable')
