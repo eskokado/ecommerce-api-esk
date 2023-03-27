@@ -18,6 +18,13 @@ RSpec.describe Admin::ProductSavingService, type: :model do
           product.reload
           expect(product.name).to eq "New product"
         end
+
+        it "updates :productable" do
+          service = described_class.new(params, product)
+          service.call
+          game.reload
+          expect(game.developer).to eq "New company"
+        end
       end
     end
   end
