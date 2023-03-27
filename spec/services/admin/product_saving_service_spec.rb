@@ -48,6 +48,14 @@ RSpec.describe Admin::ProductSavingService, type: :model do
           service = error_proof_call(product_params, product)
           expect(service.errors).to have_key(:name)
         end
+
+        it "doesn't update :product" do
+          expect {
+            error_proof_call(product_params, product)
+            product.reload
+          }.to_not change(product, :name)
+        end
+
       end
     end
   end
