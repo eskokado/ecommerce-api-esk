@@ -148,7 +148,11 @@ RSpec.describe Admin::ProductSavingService, type: :model do
             }.to_not change(Game, :count)
           end
 
-
+          it "doen not create category association" do
+            expect {
+              error_proof_call(params)
+            }.to_not change(ProductCategory, :count)
+          end
         end
       end
     end
