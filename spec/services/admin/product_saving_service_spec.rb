@@ -25,6 +25,25 @@ RSpec.describe Admin::ProductSavingService, type: :model do
           game.reload
           expect(game.developer).to eq "New company"
         end
+
+        it "updates to new categories" do
+          service = described_class.new(params, product)
+          service.call
+          product.reload
+          expect(product.categories.ids).to contain_exactly *new_categories.map(&:id)
+        end
+      end
+
+      context "with invalid :product params" do
+        let(:product_params) { attributes_for(:product, name: "") }
+
+        it "raises NotSavedProductError" do
+          expect {
+            service = described_class.new(product_params, product)
+            service.call
+          }.to raise_error(Admin::ProductSavingService::NotSavedProductError)
+        end
+
       end
     end
   end
