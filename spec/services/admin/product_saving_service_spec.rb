@@ -131,6 +131,11 @@ RSpec.describe Admin::ProductSavingService, type: :model do
             }.to raise_error(Admin::ProductSavingService::NotSavedProductError)
           end
 
+          it "sets validation :errors" do
+            service = error_proof_call(params)
+            expect(service.errors).to have_key(:productable)
+          end
+
         end
       end
     end
