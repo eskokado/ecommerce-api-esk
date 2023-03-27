@@ -72,6 +72,13 @@ RSpec.describe Admin::ProductSavingService, type: :model do
           expect(service.errors).to have_key(:developer)
         end
 
+        it "doesn't update :productable" do
+          expect {
+            error_proof_call(game_params, product)
+            product.productable.reload
+          }.to_not change(product.productable, :developer)
+        end
+
       end
     end
   end
