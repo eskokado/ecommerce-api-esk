@@ -165,6 +165,12 @@ RSpec.describe Admin::ProductSavingService, type: :model do
             }.to raise_error(Admin::ProductSavingService::NotSavedProductError)
           end
 
+          it "does not create a new product" do
+            expect {
+              error_proof_call(product_params)
+            }.to_not change(Product, :count)
+          end
+
         end
       end
     end
