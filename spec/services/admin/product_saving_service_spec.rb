@@ -78,7 +78,25 @@ RSpec.describe Admin::ProductSavingService, type: :model do
             product.productable.reload
           }.to_not change(product.productable, :developer)
         end
+      end
 
+      context "without loaded product" do
+        let!(:system_requirement) { create(:system_requirement) }
+
+        context "with invalid :product params" do
+          let(:product_params) { attributes_for(:product, name: "", productable: "game") }
+          let(:game_params) { attributes_for(:game, system_requirement_id: system_requirement.id) }
+          let(:params) { product_params.merge(productable_attributes: game_params) }
+
+          it "raises NotSavedProductError" do
+            expect {
+              service = described_class.new(params)
+              service.call
+            }.to raise_error(Admin::ProductSavingService::NotSavedProductError)
+          end
+
+
+        end
       end
     end
   end
