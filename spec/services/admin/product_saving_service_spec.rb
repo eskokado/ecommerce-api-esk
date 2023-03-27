@@ -154,6 +154,18 @@ RSpec.describe Admin::ProductSavingService, type: :model do
             }.to_not change(ProductCategory, :count)
           end
         end
+
+        context "without :productable params" do
+          let(:product_params) { attributes_for(:product) }
+
+          it "raises NotSavedProductError" do
+            expect {
+              service = described_class.new(product_params)
+              service.call
+            }.to raise_error(Admin::ProductSavingService::NotSavedProductError)
+          end
+
+        end
       end
     end
   end
