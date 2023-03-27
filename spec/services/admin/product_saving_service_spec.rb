@@ -142,6 +142,13 @@ RSpec.describe Admin::ProductSavingService, type: :model do
             }.to_not change(Product, :count)
           end
 
+          it "does not create a :productable" do
+            expect {
+              error_proof_call(params)
+            }.to_not change(Game, :count)
+          end
+
+
         end
       end
     end
