@@ -176,6 +176,12 @@ RSpec.describe Admin::ProductSavingService, type: :model do
             expect(service.errors).to have_key(:productable)
           end
 
+          it "does not create a :productable" do
+            expect {
+              error_proof_call(product_params)
+            }.to_not change(Game, :count)
+          end
+
         end
       end
     end
