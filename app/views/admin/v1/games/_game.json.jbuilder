@@ -1,1 +1,1 @@
-json.(game, :mode, :release_date, :developer)
+# json.(game, :mode, :release_date, :developer)
