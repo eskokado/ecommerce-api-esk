@@ -122,6 +122,11 @@ RSpec.describe Admin::ProductSavingService, type: :model do
             expect(service.product).to be_kind_of(Product)
           end
 
+          it "sets categories" do
+            service = described_class.new(params)
+            service.call
+            expect(service.product.categories.ids).to contain_exactly *categories.map(&:id)
+          end
         end
 
         context "with invalid :product params" do
