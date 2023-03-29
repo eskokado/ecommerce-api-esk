@@ -95,6 +95,21 @@ RSpec.describe Admin::ProductSavingService, type: :model do
       context "without loaded product" do
         let!(:system_requirement) { create(:system_requirement) }
 
+        context "with valid params" do
+          let!(:categories) { create_list(:category, 2) }
+          let(:game_params) { attributes_for(:game, system_requirement_id: system_requirement.id) }
+          let(:product_params) { attributes_for(:product, productable: "game") }
+          let(:params) { product_params.merge(category_ids: categories.map(&:id),
+                                              productable_attributes: game_params) }
+
+          it "creates a new product" do
+            expect {
+              service = described_class.new(params)
+              service.call
+            }.to change(Product, :count).by(1)
+          end
+        end
+
         context "with invalid :product params" do
           let(:product_params) { attributes_for(:product, name: "", productable: "game") }
           let(:game_params) { attributes_for(:game, system_requirement_id: system_requirement.id) }
