@@ -108,6 +108,13 @@ RSpec.describe Admin::ProductSavingService, type: :model do
               service.call
             }.to change(Product, :count).by(1)
           end
+
+          it "creates :productable" do
+            expect {
+              service = described_class.new(params)
+              service.call
+            }.to change(Game, :count).by(1)
+          end
         end
 
         context "with invalid :product params" do
