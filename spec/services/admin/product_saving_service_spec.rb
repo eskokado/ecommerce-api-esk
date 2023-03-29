@@ -55,6 +55,12 @@ RSpec.describe Admin::ProductSavingService, type: :model do
             product.reload
           }.to_not change(product, :name)
         end
+
+        it "keeps old categories" do
+          service = error_proof_call(product_params, product)
+          product.reload
+          expect(product.categories.ids).to contain_exactly *old_categories.map(&:id)
+        end
       end
 
       context "with invalid :productable params" do
