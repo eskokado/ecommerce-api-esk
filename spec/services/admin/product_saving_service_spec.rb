@@ -84,6 +84,12 @@ RSpec.describe Admin::ProductSavingService, type: :model do
             product.productable.reload
           }.to_not change(product.productable, :developer)
         end
+
+        it "keeps old categories" do
+          service = error_proof_call(game_params, product)
+          product.reload
+          expect(product.categories.ids).to contain_exactly *old_categories.map(&:id)
+        end
       end
 
       context "without loaded product" do
