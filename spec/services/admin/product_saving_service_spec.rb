@@ -115,6 +115,13 @@ RSpec.describe Admin::ProductSavingService, type: :model do
               service.call
             }.to change(Game, :count).by(1)
           end
+
+          it "sets created product" do
+            service = described_class.new(params)
+            service.call
+            expect(service.product).to be_kind_of(Product)
+          end
+
         end
 
         context "with invalid :product params" do
