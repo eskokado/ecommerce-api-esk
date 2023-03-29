@@ -179,7 +179,8 @@ RSpec.describe Admin::ProductSavingService, type: :model do
 
           it "sets validation :errors" do
             service = error_proof_call(params)
-            expect(service.errors).to have_key(:productable)
+            # expect(service.errors).to have_key(:productable)
+            expect(service.errors).to have_key(:developer)
           end
 
           it "does not create a new product" do
