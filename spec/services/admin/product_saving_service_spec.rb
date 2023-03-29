@@ -55,6 +55,12 @@ RSpec.describe Admin::ProductSavingService, type: :model do
             product.reload
           }.to_not change(product, :name)
         end
+
+        it "keeps old categories" do
+          service = error_proof_call(product_params, product)
+          product.reload
+          expect(product.categories.ids).to contain_exactly *old_categories.map(&:id)
+        end
       end
 
       context "with invalid :productable params" do
@@ -78,10 +84,50 @@ RSpec.describe Admin::ProductSavingService, type: :model do
             product.productable.reload
           }.to_not change(product.productable, :developer)
         end
+
+        it "keeps old categories" do
+          service = error_proof_call(game_params, product)
+          product.reload
+          expect(product.categories.ids).to contain_exactly *old_categories.map(&:id)
+        end
       end
 
       context "without loaded product" do
         let!(:system_requirement) { create(:system_requirement) }
+
+        context "with valid params" do
+          let!(:categories) { create_list(:category, 2) }
+          let(:game_params) { attributes_for(:game, system_requirement_id: system_requirement.id) }
+          let(:product_params) { attributes_for(:product, productable: "game") }
+          let(:params) { product_params.merge(category_ids: categories.map(&:id),
+                                              productable_attributes: game_params) }
+
+          it "creates a new product" do
+            expect {
+              service = described_class.new(params)
+              service.call
+            }.to change(Product, :count).by(1)
+          end
+
+          it "creates :productable" do
+            expect {
+              service = described_class.new(params)
+              service.call
+            }.to change(Game, :count).by(1)
+          end
+
+          it "sets created product" do
+            service = described_class.new(params)
+            service.call
+            expect(service.product).to be_kind_of(Product)
+          end
+
+          it "sets categories" do
+            service = described_class.new(params)
+            service.call
+            expect(service.product.categories.ids).to contain_exactly *categories.map(&:id)
+          end
+        end
 
         context "with invalid :product params" do
           let(:product_params) { attributes_for(:product, name: "", productable: "game") }
@@ -133,7 +179,8 @@ RSpec.describe Admin::ProductSavingService, type: :model do
 
           it "sets validation :errors" do
             service = error_proof_call(params)
-            expect(service.errors).to have_key(:productable)
+            # expect(service.errors).to have_key(:productable)
+            expect(service.errors).to have_key(:developer)
           end
 
           it "does not create a new product" do
