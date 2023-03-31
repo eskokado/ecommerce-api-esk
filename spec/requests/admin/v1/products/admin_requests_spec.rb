@@ -228,6 +228,12 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
           post url, headers: post_header, params: product_without_productable_params
         end.to_not change(Product, :count)
       end
+
+      it 'does not add a new productable' do
+        expect do
+          post url, headers: post_header, params: product_without_productable_params
+        end.to_not change(Game, :count)
+      end
     end
   end
 end
