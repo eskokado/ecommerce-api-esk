@@ -127,6 +127,20 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         expect(Product.last.categories.ids).to contain_exactly *categories.map(&:id)
       end
 
+      it 'returns last added Product' do
+        post url, headers: post_header, params: product_params
+        expected_product = build_game_product_json(Product.last)
+        puts expected_product
+        puts JSON.parse(response.body)['product']
+        expect(
+          JSON.parse(response.body)['product']
+            .except("system_requirement")
+            .slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories")
+        ).to eq expected_product
+                  .except("system_requirement")
+                  .slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories")
+      end
+
     end
 
   end
