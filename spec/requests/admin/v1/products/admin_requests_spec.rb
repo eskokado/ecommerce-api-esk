@@ -115,6 +115,12 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
           post url, headers: post_header, params: product_params
         end.to change(Product, :count).by(1)
       end
+
+      it 'adds a new productable' do
+        expect do
+          post url, headers: post_header, params: product_params
+        end.to change(Game, :count).by(1)
+      end
     end
 
   end
