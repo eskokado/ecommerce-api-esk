@@ -62,6 +62,14 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         get url, headers: auth_header(user), params: pagination_params
         expect(JSON.parse(response.body).count).to eq length
       end
+
+      it "returns products limited by pagination" do
+        get url, headers: auth_header(user), params: pagination_params
+        expected_return = products[5..9].map do |product|
+          build_game_product_json(product)
+        end
+        expect(JSON.parse(response.body).map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_return.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
+      end
     end
   end
 end
