@@ -317,6 +317,19 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "with invalid Product params" do
+      let(:product_invalid_params) do
+        { product: attributes_for(:product, name: nil).merge(category_ids: new_categories.map(&:id)) }
+      end
+
+      it 'does not update Product' do
+        old_name = product.name
+        patch url, headers: patch_header, params: product_invalid_params
+        product.reload
+        expect(product.name).to eq old_name
+      end
+    end
   end
 end
 
