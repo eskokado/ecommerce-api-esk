@@ -266,6 +266,11 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
                 .except("system_requirement")
                 .slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories")
     end
+
+    it "returns success status" do
+      get url, headers: auth_header(user)
+      expect(response).to have_http_status(:ok)
+    end
   end
 end
 
