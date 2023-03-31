@@ -206,6 +206,11 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
           post url, headers: post_header, params: invalid_productable_params
         end.to_not change(ProductCategory, :count)
       end
+
+      it 'returns error message' do
+        post url, headers: post_header, params: invalid_productable_params
+        expect(body_json['errors']['fields']).to have_key('developer')
+      end
     end
   end
 end
