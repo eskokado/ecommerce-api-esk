@@ -130,8 +130,6 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
       it 'returns last added Product' do
         post url, headers: post_header, params: product_params
         expected_product = build_game_product_json(Product.last)
-        puts expected_product
-        puts JSON.parse(response.body)['product']
         expect(
           JSON.parse(response.body)['product']
             .except("system_requirement")
@@ -250,6 +248,23 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         post url, headers: post_header, params: product_without_productable_params
         expect(response).to have_http_status(:unprocessable_entity)
       end
+    end
+  end
+
+  context "GET /products/:id" do
+    let(:product) { create(:product) }
+    let(:url) { "/admin/v1/products/#{product.id}" }
+
+    it "returns requested Product" do
+      get url, headers: auth_header(user)
+      expected_product = build_game_product_json(product)
+      expect(
+        JSON.parse(response.body)['product']
+          .except("system_requirement")
+          .slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories")
+      ).to eq expected_product
+                .except("system_requirement")
+                .slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories")
     end
   end
 end
