@@ -435,6 +435,13 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
       delete url, headers: auth_header(user)
       expect(body_json).to_not be_present
     end
+
+    it 'removes all associated product categories' do
+      product_categories = create_list(:product_category, 3, product: product)
+      delete url, headers: auth_header(user)
+      expected_product_categories = ProductCategory.where(id: product_categories.map(&:id))
+      expect(expected_product_categories.count).to eq 0
+    end
   end
 end
 
