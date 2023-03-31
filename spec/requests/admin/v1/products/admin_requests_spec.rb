@@ -182,6 +182,19 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    context "with invalid :productable params" do
+      let(:game_params) { attributes_for(:game, developer: "", system_requirement_id: system_requirement.id) }
+      let(:invalid_productable_params) do
+        { product: attributes_for(:product).merge(productable: "game").merge(game_params) }
+      end
+
+      it 'does not add a new Product' do
+        expect do
+          post url, headers: post_header, params: invalid_productable_params
+        end.to_not change(Product, :count)
+      end
+    end
   end
 end
 
