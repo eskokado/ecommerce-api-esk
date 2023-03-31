@@ -408,6 +408,18 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
       end
     end
   end
+
+  context "DELETE /products/:id" do
+    let(:productable) { create(:game) }
+    let!(:product) { create(:product, productable: productable) }
+    let(:url) { "/admin/v1/products/#{product.id}" }
+
+    it 'removes Product' do
+      expect do
+        delete url, headers: auth_header(user)
+      end.to change(Product, :count).by(-1)
+    end
+  end
 end
 
 def build_game_product_json(product)
