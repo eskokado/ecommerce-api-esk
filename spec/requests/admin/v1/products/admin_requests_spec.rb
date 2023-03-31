@@ -95,6 +95,59 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
 
     end
   end
+
+  context "POST /products" do
+    let(:url) { "/admin/v1/products" }
+    let(:categories) { create_list(:category, 2) }
+    let(:system_requirement) { create(:system_requirement) }
+    let(:post_header) { auth_header(user, merge_with: { 'Content-Type' => 'multipart/form-data' }) }
+
+    context "with valid params" do
+
+      let(:game_params) { attributes_for(:game, system_requirement_id: system_requirement.id) }
+      let(:product_params) do
+        { product: attributes_for(:product).merge(category_ids: categories.map(&:id))
+                                           .merge(productable: "game").merge(game_params) }
+      end
+
+      it 'adds a new Product' do
+        expect do
+          post url, headers: post_header, params: product_params
+        end.to change(Product, :count).by(1)
+      end
+
+      it 'adds a new productable' do
+        expect do
+          post url, headers: post_header, params: product_params
+        end.to change(Game, :count).by(1)
+      end
+
+      it 'associates categories to Product' do
+        post url, headers: post_header, params: product_params
+        expect(Product.last.categories.ids).to contain_exactly *categories.map(&:id)
+      end
+
+      it 'returns last added Product' do
+        post url, headers: post_header, params: product_params
+        expected_product = build_game_product_json(Product.last)
+        puts expected_product
+        puts JSON.parse(response.body)['product']
+        expect(
+          JSON.parse(response.body)['product']
+            .except("system_requirement")
+            .slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories")
+        ).to eq expected_product
+                  .except("system_requirement")
+                  .slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories")
+      end
+
+      it 'returns success status' do
+        post url, headers: post_header, params: product_params
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+  end
 end
 
 def build_game_product_json(product)
