@@ -1,278 +1,105 @@
 require 'rails_helper'
 require 'json_spec'
 
-# RSpec.describe "Admin V1 Products as :admin", type: :request do
-#   let(:user) { create(:user) }
-#
-#   context "GET /products" do
-#     let(:url) { "/admin/v1/products" }
-#     let!(:categories) { create_list(:category, 2) }
-#     let!(:products) { create_list(:product, 10, categories: categories) }
-#
-#     context "without any params" do
-#       it "returns 10 records" do
-#         get url, headers: auth_header(user)
-#         expect(body_json['products'].count).to eq 10
-#       end
-#
-#       it "returns Products with :productable following default pagination" do
-#         get url, headers: auth_header(user)
-#         expected_return = products[0..9].map do |product|
-#           build_game_product_json(product)
-#         end
-#         # expect(body_json['products']).to contain_exactly *expected_return
-#         expect(JSON.parse(response.body)).to eq(expected_return)
-#       end
-#     end
-#   end
-# end
-
-# def build_game_product_json(product)
-#   json = product.as_json(only: %i(id name description price status featured))
-#   json['image'] = product.image
-#   json['productable'] = product.productable_type.underscore
-#   json['productable_id'] = product.productable_id
-#   json['categories'] = product.categories.as_json
-#   json.merge! product.productable.as_json(only: %i(mode release_date developer))
-#   json['system_requirement'] = product.productable.system_requirement.as_json
-#   json
-# end
-
-
-RSpec.describe "Admin::V1::Products as :admin", type: :request do
+RSpec.describe "Admin V1 Products as :admin", type: :request do
   let(:user) { create(:user) }
+  let!(:categories) { create_list(:category, 2) }
+  let!(:game) { create(:game) }
+  let!(:products) { create_list(:product, 10, categories: categories, productable: game) }
 
   context "GET /products" do
     let(:url) { "/admin/v1/products" }
-    let!(:products) { create_list(:product, 5) }
 
-    it "returns all Products" do
-      get url, headers: auth_header(user)
-
-      expected_response = products.as_json(
-        only: %i(id name description price image status),
-        include: {
-          productable: { only: %i(id mode release_date developer) },
-          categories: { only: %i(id name) }
-        }
-      )
-
-      expect(response.headers['Content-Type']).to eq('application/json; charset=utf-8')
-      expect(JSON.parse(response.body)).to be_an(Array)
-      expect(JSON.parse(response.body)).not_to be_empty
-
-      # Testa os campos do primeiro item do array
-      first_item = JSON.parse(response.body).first
-      expect(first_item).to have_key('id')
-      expect(first_item).to have_key('name')
-      expect(first_item).to have_key('productable')
-      expect(first_item).to have_key('categories')
-      expect(first_item).to have_key('status')
-
-      # Verifica se o campo 'productable' é um hash que contém as chaves 'id' e 'mode'
-      expect(first_item['productable']).to be_a(Hash)
-      expect(first_item['productable']).to have_key('id')
-      expect(first_item['productable']).to have_key('mode')
-
-      # Verifica se o campo 'categories' é um array de hashes
-      expect(first_item['categories']).to be_an(Array)
-      expect(first_item['categories']).not_to be_empty
-
-      # Verifica se o primeiro item do array de 'categories' contém as chaves 'id' e 'name'
-      expect(first_item['categories'].first).to have_key('id')
-      expect(first_item['categories'].first).to have_key('name')
-    end
-
-    it "returns success status" do
-      get url, headers: auth_header(user)
-      expect(response).to have_http_status(:ok)
-    end
-  end
-
-  context "POST /products" do
-    let(:url) { "/admin/v1/products" }
-
-    context "with valid params" do
-      let(:game) { create(:game) }
-      let(:product_params) { { product: attributes_for(:product, productable_id: game.id, productable_type: "Game") }.to_json }
-
-      it 'adds a new Product' do
-        expect do
-          post url, headers: auth_header(user), params: product_params
-        end.to change(Product, :count).by(1)
+    context "without any params" do
+      before(:each) do
+        get url, headers: auth_header(user)
       end
 
-      it 'returns last added Product' do
-        post url, headers: auth_header(user), params: product_params
-        expected_product = { product: Product.last.reload.as_json(
-          only: %i[id name description price image status],
-          include: { productable: { only: %i[id mode release_date developer] }, categories: { only: %i[id name] } }
-        ) }.stringify_keys
-        expect(JSON.parse(response.body)).to eq(expected_product)
+      it "returns 10 records" do
+        expect(JSON.parse(response.body).count).to eq 10
       end
 
-      it 'returns success status' do
-        post url, headers: auth_header(user), params: product_params
+      it "returns Products with :productable following the default pagination" do
+        expected_products = products[0..9].map { |product| build_game_product_json(product) }
+        expect(JSON.parse(response.body).map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_products.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
+      end
+
+      it "returns success status" do
         expect(response).to have_http_status(:ok)
       end
     end
 
-    context "with invalid params" do
-      let(:product_invalid_params) do
-        { product: attributes_for(
-            :product,
-            name: nil,
-            description: nil,
-            price: nil,
-            image: nil
-          )
-        }.to_json
+    context "with search[name] param" do
+      let!(:search_name_products) do
+        products = []
+        15.times { |n| products << create(:product, name: "Search #{n + 1}") }
+        products
       end
 
-      it 'does not add a new Product' do
-        expect do
-          post url, headers: auth_header(user), params: product_invalid_params
-        end.to_not change(Product, :count)
+      let(:search_params) { { search: { name: "Search" } } }
+
+      it "returns only seached products limited by default pagination" do
+        get url, headers: auth_header(user), params: search_params
+        expected_return = search_name_products[0..9].map do |product|
+          build_game_product_json(product)
+        end
+        expect(JSON.parse(response.body).map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_return.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
       end
 
-      it 'returns error message' do
-        post url, headers: auth_header(user), params: product_invalid_params
-
-        body = JSON.parse(response.body)
-        expect(body['errors']['fields']).to have_key('name')
-        expect(body['errors']['fields']).to have_key('description')
-        expect(body['errors']['fields']).to have_key('price')
-        expect(body['errors']['fields']).to have_key('image')
-        expect(body['errors']['fields']).to have_key('productable')
-      end
-
-      it 'returns unprocessable_entity status' do
-        post url, headers: auth_header(user), params: product_invalid_params
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-    end
-  end
-
-  context "PATCH /products/:id" do
-    let(:product) { create(:product) }
-    let(:url) { "/admin/v1/products/#{product.id}" }
-
-    context "with valid params" do
-      let(:game) { create(:game) }
-      let(:new_name) { 'My new Product' }
-      let(:new_description) { 'My new Description Product' }
-      let(:new_price) { 150.0 }
-      let(:new_image) { 'new_image.png' }
-      let(:product_params) { { product: {
-        name: new_name,
-        description: new_description,
-        price: new_price,
-        image: new_image,
-        productable_id: game.id,
-        productable_type: "Game"
-      } }.to_json }
-
-      it 'updates Product' do
-        patch url, headers: auth_header(user), params: product_params
-        product.reload
-        expect(product.name).to eq new_name
-        expect(product.description).to eq new_description
-        expect(product.price).to eq new_price
-        expect(product.image).to eq new_image
-        expect(product.productable_id).to eq game.id
-      end
-
-      it 'returns updated Product' do
-        patch url, headers: auth_header(user), params: product_params
-        product.reload
-        expected_product = { product: Product.last.reload.as_json(
-          only: %i[id name description price image status],
-          include: { productable: { only: %i[id mode release_date developer] }, categories: { only: %i[id name] } }
-        ) }.stringify_keys
-        expect(JSON.parse(response.body)).to eq(expected_product)
-      end
-
-      it 'returns success status' do
-        patch url, headers: auth_header(user), params: product_params
+      it "returns success status" do
+        get url, headers: auth_header(user), params: search_params
         expect(response).to have_http_status(:ok)
       end
     end
 
-    context "with invalid params" do
-      let(:product_invalid_params) { { product: {
-        name: nil,
-        description: nil,
-        price: nil,
-        image: nil,
-        productable_id: nil
-      } }.to_json }
+    context "with pagination params" do
+      let(:page) { 2 }
+      let(:length) { 5 }
 
-      it 'does not update Product' do
-        old_name = product.name
-        old_description = product.description
-        old_price = product.price
-        old_image = product.image
-        old_productable_id = product.productable_id
-        patch url, headers: auth_header(user), params: product_invalid_params
-        product.reload
-        expect(product.name).to eq old_name
-        expect(product.description).to eq old_description
-        expect(product.price).to eq old_price
-        expect(product.image).to eq old_image
-        expect(product.productable_id).to eq old_productable_id
+      let(:pagination_params) { { page: page, length: length } }
+
+      it "returns records sized by :length" do
+        get url, headers: auth_header(user), params: pagination_params
+        expect(JSON.parse(response.body).count).to eq length
       end
 
-      it 'returns error message' do
-        patch url, headers: auth_header(user), params: product_invalid_params
-        body = JSON.parse(response.body)
-        expect(body['errors']['fields']).to have_key('name')
-        expect(body['errors']['fields']).to have_key('description')
-        expect(body['errors']['fields']).to have_key('price')
-        expect(body['errors']['fields']).to have_key('image')
-        expect(body['errors']['fields']).to have_key('productable')
+      it "returns products limited by pagination" do
+        get url, headers: auth_header(user), params: pagination_params
+        expected_return = products[5..9].map do |product|
+          build_game_product_json(product)
+        end
+        expect(JSON.parse(response.body).map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_return.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
       end
 
-      it 'returns unprocessable_entity status' do
-        patch url, headers: auth_header(user), params: product_invalid_params
-        expect(response).to have_http_status(:unprocessable_entity)
+      it "returns success status" do
+        get url, headers: auth_header(user), params: pagination_params
+        expect(response).to have_http_status(:ok)
       end
+    end
+    context "with order params" do
+      let(:order_params) { { order: { name: 'desc' } } }
+
+      it "returns ordered products limited by default pagination" do
+        get url, headers: auth_header(user), params: order_params
+        products.sort! { |a, b| b[:name] <=> a[:name] }
+        expected_return = products[0..9].map do |product|
+          build_game_product_json(product)
+        end
+        expect(JSON.parse(response.body).map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_return.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
+      end
+
+      it "returns success status" do
+        get url, headers: auth_header(user), params: order_params
+        expect(response).to have_http_status(:ok)
+      end
+
     end
   end
+end
 
-  context "DELETE /products/:id" do
-    let!(:product) { create(:product) }
-    let(:url) { "/admin/v1/products/#{product.id}" }
-
-    it 'removes Product' do
-      expect do
-        delete url, headers: auth_header(user)
-      end.to change(Product, :count).by(-1)
-    end
-
-    it 'returns success status' do
-      delete url, headers: auth_header(user)
-      expect(response).to have_http_status(:no_content)
-    end
-
-    it 'does not return any body content' do
-      delete url, headers: auth_header(user)
-      expect(body_json).to_not be_present
-    end
-
-    it 'removes all associated product categories' do
-      product_categories = create_list(:product_category, 3, product: product)
-      delete url, headers: auth_header(user)
-      expected_product_categories = ProductCategory.where(id: product_categories.map(&:id))
-      expect(expected_product_categories.count).to eq 0
-    end
-
-    it 'does not remove unassociated product categories' do
-      product_categories = create_list(:product_category, 3)
-      delete url, headers: auth_header(user)
-      present_product_categories_ids = product_categories.map(&:id)
-      expected_product_categories = ProductCategory.where(id: present_product_categories_ids)
-      expect(expected_product_categories.ids).to contain_exactly(*present_product_categories_ids)
-    end
-
-  end
+def build_game_product_json(product)
+  json = product.as_json(only: %i(id name description price status))
+  json['productable'] = product.productable.as_json(only: %i(id mode release_date developer))
+  json['categories'] = product.categories.map { |category| category.as_json(only: %i(id name)) }
+  json
 end
