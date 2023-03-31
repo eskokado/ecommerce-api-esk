@@ -272,6 +272,28 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
       expect(response).to have_http_status(:ok)
     end
   end
+
+  context "PATCH /products/:id" do
+    let(:old_categories) { create_list(:category, 2) }
+    let(:new_categories) { create_list(:category, 2) }
+    let(:product) { create(:product, categories: old_categories) }
+    let(:system_requirement) { create(:system_requirement) }
+    let(:url) { "/admin/v1/products/#{product.id}" }
+    let(:patch_header) { auth_header(user, merge_with: { 'Content-Type' => 'multipart/form-data' }) }
+
+    context "with valid Product params" do
+      let(:new_name) { 'New name' }
+      let(:product_params) do
+        { product: attributes_for(:product, name: new_name).merge(category_ids: new_categories.map(&:id)) }
+      end
+
+      it 'updates Product' do
+        patch url, headers: patch_header, params: product_params
+        product.reload
+        expect(product.name).to eq new_name
+      end
+    end
+  end
 end
 
 def build_game_product_json(product)
