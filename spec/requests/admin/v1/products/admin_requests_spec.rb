@@ -76,6 +76,19 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+    context "with order params" do
+      let(:order_params) { { order: { name: 'desc' } } }
+
+      it "returns ordered products limited by default pagination" do
+        get url, headers: auth_header(user), params: order_params
+        products.sort! { |a, b| b[:name] <=> a[:name] }
+        expected_return = products[0..9].map do |product|
+          build_game_product_json(product)
+        end
+        expect(JSON.parse(response.body).map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_return.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
+      end
+
+    end
   end
 end
 
