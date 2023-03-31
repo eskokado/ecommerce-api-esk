@@ -335,6 +335,11 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         product.reload
         expect(product.categories.ids).to contain_exactly *old_categories.map(&:id)
       end
+
+      it 'returns error message' do
+        patch url, headers: patch_header, params: product_invalid_params
+        expect(body_json['errors']['fields']).to have_key('name')
+      end
     end
   end
 end
