@@ -401,6 +401,11 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
                   .slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories")
 
       end
+
+      it 'returns success status' do
+        patch url, headers: patch_header, params: product_without_productable_params
+        expect(response).to have_http_status(:ok)
+      end
     end
   end
 end
