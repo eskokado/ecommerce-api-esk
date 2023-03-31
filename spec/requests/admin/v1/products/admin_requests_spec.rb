@@ -369,6 +369,19 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    context "without :productable params" do
+      let(:new_name) { 'New name' }
+      let(:product_without_productable_params) do
+        { product: attributes_for(:product, name: new_name).merge(category_ids: new_categories.map(&:id)) }
+      end
+
+      it 'updates Product' do
+        patch url, headers: patch_header, params: product_without_productable_params
+        product.reload
+        expect(product.name).to eq new_name
+      end
+    end
   end
 end
 
