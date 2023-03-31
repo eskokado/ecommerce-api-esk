@@ -329,6 +329,12 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         product.reload
         expect(product.name).to eq old_name
       end
+
+      it 'keeps old categories' do
+        patch url, headers: patch_header, params: product_invalid_params
+        product.reload
+        expect(product.categories.ids).to contain_exactly *old_categories.map(&:id)
+      end
     end
   end
 end
