@@ -95,6 +95,29 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
 
     end
   end
+
+  context "POST /products" do
+    let(:url) { "/admin/v1/products" }
+    let(:categories) { create_list(:category, 2) }
+    let(:system_requirement) { create(:system_requirement) }
+    let(:post_header) { auth_header(user, merge_with: { 'Content-Type' => 'multipart/form-data' }) }
+
+    context "with valid params" do
+
+      let(:game_params) { attributes_for(:game, system_requirement_id: system_requirement.id) }
+      let(:product_params) do
+        { product: attributes_for(:product).merge(category_ids: categories.map(&:id))
+                                           .merge(productable: "game").merge(game_params) }
+      end
+
+      it 'adds a new Product' do
+        expect do
+          post url, headers: post_header, params: product_params
+        end.to change(Product, :count).by(1)
+      end
+    end
+
+  end
 end
 
 def build_game_product_json(product)
