@@ -346,6 +346,19 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    context "with invalid :productable params" do
+      let(:invalid_productable_params) do
+        { product: attributes_for(:game, developer: "") }
+      end
+
+      it 'does not update productable' do
+        old_developer = product.productable.developer
+        patch url, headers: patch_header, params: invalid_productable_params
+        product.productable.reload
+        expect(product.productable.developer).to eq old_developer
+      end
+    end
   end
 end
 
