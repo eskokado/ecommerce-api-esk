@@ -23,6 +23,10 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         expected_products = products[0..9].map { |product| build_game_product_json(product) }
         expect(JSON.parse(response.body).map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_products.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
       end
+
+      it "returns success status" do
+        expect(response).to have_http_status(:ok)
+      end
     end
   end
 end
