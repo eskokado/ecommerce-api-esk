@@ -387,6 +387,20 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         product.reload
         expect(product.categories.ids).to contain_exactly *new_categories.map(&:id)
       end
+
+      it 'returns updated Product' do
+        patch url, headers: patch_header, params: product_without_productable_params
+        product.reload
+        expected_product = build_game_product_json(product)
+        expect(
+          JSON.parse(response.body)['product']
+            .except("system_requirement")
+            .slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories")
+        ).to eq expected_product
+                  .except("system_requirement")
+                  .slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories")
+
+      end
     end
   end
 end
