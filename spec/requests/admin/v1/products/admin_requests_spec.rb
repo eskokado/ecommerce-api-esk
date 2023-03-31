@@ -121,6 +121,12 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
           post url, headers: post_header, params: product_params
         end.to change(Game, :count).by(1)
       end
+
+      it 'associates categories to Product' do
+        post url, headers: post_header, params: product_params
+        expect(Product.last.categories.ids).to contain_exactly *categories.map(&:id)
+      end
+
     end
 
   end
