@@ -363,6 +363,11 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         patch url, headers: patch_header, params: invalid_productable_params
         expect(body_json['errors']['fields']).to have_key('developer')
       end
+
+      it 'returns unprocessable_entity status' do
+        patch url, headers: patch_header, params: invalid_productable_params
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
     end
   end
 end
