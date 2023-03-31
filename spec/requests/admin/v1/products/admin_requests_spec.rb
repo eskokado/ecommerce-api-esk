@@ -28,6 +28,24 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "with search[name] param" do
+      let!(:search_name_products) do
+        products = []
+        15.times { |n| products << create(:product, name: "Search #{n + 1}") }
+        products
+      end
+
+      let(:search_params) { { search: { name: "Search" } } }
+
+      it "returns only seached products limited by default pagination" do
+        get url, headers: auth_header(user), params: search_params
+        expected_return = search_name_products[0..9].map do |product|
+          build_game_product_json(product)
+        end
+        expect(JSON.parse(response.body).map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_return.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
+      end
+    end
   end
 end
 
