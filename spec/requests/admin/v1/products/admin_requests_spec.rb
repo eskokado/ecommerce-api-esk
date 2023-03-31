@@ -419,6 +419,12 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         delete url, headers: auth_header(user)
       end.to change(Product, :count).by(-1)
     end
+
+    it 'removes productable' do
+      expect do
+        delete url, headers: auth_header(user)
+      end.to change(Game, :count).by(-1)
+    end
   end
 end
 
