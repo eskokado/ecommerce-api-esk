@@ -1,5 +1,6 @@
 module Admin::V1
   class ProductsController < ApiController
+    before_action :load_product, only: %i(show update destroy)
     def index
       @products = load_products
       end
@@ -13,9 +14,9 @@ module Admin::V1
     def show; end
 
     def update
-      @product = Product.find(params[:id])
-      @product.attributes = product_params
-      save_product!
+      run_service
+    rescue Admin::ProductSavingService::NotSavedProductError
+      render_error(fields: @saving_service.errors)
     end
 
     def destroy
@@ -26,6 +27,10 @@ module Admin::V1
     end
 
     private
+
+    def load_product
+      @product = Product.find(params[:id])
+    end
 
     def load_products
       permitted = params.permit({ search: :name }, { order: {} }, :page, :length)
