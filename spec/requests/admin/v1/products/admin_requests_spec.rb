@@ -381,6 +381,12 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         product.reload
         expect(product.name).to eq new_name
       end
+
+      it 'updates to new categories' do
+        patch url, headers: patch_header, params: product_without_productable_params
+        product.reload
+        expect(product.categories.ids).to contain_exactly *new_categories.map(&:id)
+      end
     end
   end
 end
