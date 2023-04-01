@@ -105,6 +105,14 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
         expect(license.game_id).to eq game.id
         expect(license.user_id).to eq user.id
       end
+
+      it 'returns updated License' do
+        patch url, headers: auth_header(user), params: license_params
+        license.reload
+        expected_license = license.as_json(only: %i(id key game_id user_id))
+        body = JSON.parse(response.body)
+        expect(body['license']).to match_array expected_license
+      end
     end
   end
 end
