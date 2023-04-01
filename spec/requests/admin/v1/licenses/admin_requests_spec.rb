@@ -46,6 +46,18 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
 
     end
 
+    context "with invalid params" do
+      let(:license_invalid_params) do
+        { license: attributes_for(:license, key: nil) }.to_json
+      end
+
+      it 'does not add a new Licence' do
+        expect do
+          post url, headers: auth_header(user), params: license_invalid_params
+        end.to_not change(License, :count)
+      end
+    end
+
   end
 
 end
