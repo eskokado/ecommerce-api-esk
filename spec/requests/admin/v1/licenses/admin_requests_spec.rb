@@ -119,5 +119,26 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "with invalid params" do
+      let(:license_invalid_params) do
+        { license: attributes_for(:license, name: nil) }.to_json
+      end
+
+      it 'does not update License' do
+        old_key = Faker::Number.between(from: 5000, to: 10000)
+        old_user = create(:user)
+        old_game = create(:game)
+        license = License.create!(key: old_key, user_id: old_user.id, game_id: old_game.id)
+
+        patch url, headers: auth_header(user), params: license_invalid_params
+        license.reload
+
+        expect(license.key).to eq old_key
+        expect(license.user_id).to eq old_user.id
+        expect(license.game_id).to eq old_game.id
+      end
+
+    end
   end
 end
