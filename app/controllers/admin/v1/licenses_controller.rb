@@ -1,5 +1,6 @@
 module Admin::V1
   class LicensesController < ApiController
+    before_action :load_license, only: [:show]
     def index
       @licenses = License.all
     end
@@ -10,7 +11,13 @@ module Admin::V1
       save_license!
     end
 
+    def show
+    end
+
     private
+    def load_license
+      @license = License.find(params[:id])
+    end
     def license_params
       return {} unless params.has_key?(:license)
       params.require(:license).permit(:id, :key, :game_id, :user_id)
