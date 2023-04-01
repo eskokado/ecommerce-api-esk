@@ -151,4 +151,16 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
       end
     end
   end
+
+  context "DELETE /licenses/:id" do
+    let!(:license) { create(:license) }
+    let(:url) { "/admin/v1/licenses/#{license.id}" }
+
+    it 'removes License' do
+      expect do
+        delete url, headers: auth_header(user)
+      end.to change(License, :count).by(-1)
+    end
+
+  end
 end
