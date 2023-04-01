@@ -72,4 +72,15 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
 
   end
 
+  context "GET /licenses/:id" do
+    let(:license) { create(:license) }
+    let(:url) { "/admin/v1/licenses/#{license.id}" }
+
+    it "returns requested License" do
+      get url, headers: auth_header(user)
+      expected_license = license.as_json(only: %i(id key game_id user_id))
+      expect(body_json['license']).to match_array expected_license
+    end
+  end
+
 end
