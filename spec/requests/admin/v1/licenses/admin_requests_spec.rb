@@ -81,6 +81,11 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
       expected_license = license.as_json(only: %i(id key game_id user_id))
       expect(body_json['license']).to match_array expected_license
     end
+
+    it "returns success status" do
+      get url, headers: auth_header(user)
+      expect(response).to have_http_status(:ok)
+    end
   end
 
 end
