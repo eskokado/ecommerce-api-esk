@@ -122,7 +122,7 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
 
     context "with invalid params" do
       let(:license_invalid_params) do
-        { license: attributes_for(:license, name: nil) }.to_json
+        { license: attributes_for(:license, key: nil) }.to_json
       end
 
       it 'does not update License' do
@@ -137,6 +137,13 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
         expect(license.key).to eq old_key
         expect(license.user_id).to eq old_user.id
         expect(license.game_id).to eq old_game.id
+      end
+
+      it 'returns error message' do
+        patch url, headers: auth_header(user), params: license_invalid_params
+        body = JSON.parse(response.body)
+        puts response.body
+        expect(body['errors']['fields']).to have_key('key')
       end
 
     end
