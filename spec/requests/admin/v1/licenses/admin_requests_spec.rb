@@ -142,10 +142,13 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
       it 'returns error message' do
         patch url, headers: auth_header(user), params: license_invalid_params
         body = JSON.parse(response.body)
-        puts response.body
         expect(body['errors']['fields']).to have_key('key')
       end
 
+      it 'returns unprocessable_entity status' do
+        patch url, headers: auth_header(user), params: license_invalid_params
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
     end
   end
 end
