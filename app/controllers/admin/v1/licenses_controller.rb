@@ -1,6 +1,6 @@
 module Admin::V1
   class LicensesController < ApiController
-    before_action :load_license, only: [:show]
+    before_action :load_license, only: [:show, :update]
     def index
       @licenses = License.all
     end
@@ -12,6 +12,10 @@ module Admin::V1
     end
 
     def show
+    end
+    def update
+      @license.attributes = license_params
+      save_license!
     end
 
     private
