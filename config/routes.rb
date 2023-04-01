@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       resources :coupons
       resources :products
       resources :users
+      resources :licenses
     end
   end
 

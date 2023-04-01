@@ -11,5 +11,7 @@ class User < ActiveRecord::Base
   validates :email, presence: true
   validates :profile, presence: true
 
+  has_many :licenses
+
   enum profile: { admin: 0, client: 1 }
 end
