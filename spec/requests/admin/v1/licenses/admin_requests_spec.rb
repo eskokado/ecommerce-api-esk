@@ -88,4 +88,23 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
     end
   end
 
+  context "PATCH /licenses/:id" do
+    let(:license) { create(:license) }
+    let(:url) { "/admin/v1/licenses/#{license.id}" }
+
+    context "with valid params" do
+      let(:user) { create(:user) }
+      let(:game) { create(:game) }
+      let(:new_key) { 6000 }
+      let(:license_params) { { license: attributes_for(:license, key: new_key).merge(user_id: user.id, game_id: game.id) }.to_json }
+
+      it 'updates License' do
+        patch url, headers: auth_header(user), params: license_params
+        license.reload
+        expect(license.key).to eq new_key
+        expect(license.game_id).to eq game.id
+        expect(license.user_id).to eq user.id
+      end
+    end
+  end
 end
