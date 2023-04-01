@@ -25,4 +25,22 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
     end
   end
 
+  context "POST /licenses" do
+    let(:url) { "/admin/v1/licenses" }
+
+    context "with valid params" do
+      let(:user) { create(:user) }
+      let(:game) { create(:game) }
+      let(:license_params) { { license: attributes_for(:license).merge(user_id: user.id, game_id: game.id) }.to_json }
+
+      it 'adds a new License' do
+        expect do
+          post url, headers: auth_header(user), params: license_params
+        end.to change(License, :count).by(1)
+      end
+
+    end
+
+  end
+
 end
