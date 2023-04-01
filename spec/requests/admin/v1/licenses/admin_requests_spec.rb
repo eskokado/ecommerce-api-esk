@@ -56,6 +56,13 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
           post url, headers: auth_header(user), params: license_invalid_params
         end.to_not change(License, :count)
       end
+
+      it 'returns error message' do
+        post url, headers: auth_header(user), params: license_invalid_params
+
+        body = JSON.parse(response.body)
+        expect(body['errors']['fields']).to have_key('key')
+      end
     end
 
   end
