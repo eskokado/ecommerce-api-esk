@@ -39,6 +39,11 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
         end.to change(License, :count).by(1)
       end
 
+      it 'returns success status' do
+        post url, headers: auth_header(user), params: license_params
+        expect(response).to have_http_status(:ok)
+      end
+
     end
 
   end
