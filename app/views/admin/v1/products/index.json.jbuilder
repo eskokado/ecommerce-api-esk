@@ -1,10 +1,7 @@
 # json.products do
-#   json.array! @products do |product|
-#     json.partial! product
-#     json.partial! product.productable
-#   end
+#   json.array! @loading_service.records do |product|
 # end
-json.array! @products do |product|
+json.array! @loading_service.records do |product|
   json.extract! product, :id, :name, :description, :price, :image, :status
 
   json.productable do
