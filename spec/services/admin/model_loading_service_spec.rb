@@ -79,6 +79,12 @@ describe Admin::ModelLoadingService do
         service.call
         expect(service.pagination[:length]).to eq 10
       end
+
+      it "sets right :total" do
+        service = described_class.new(Category.all, nil)
+        service.call
+        expect(service.pagination[:total]).to eq 15
+      end
     end
   end
 end
