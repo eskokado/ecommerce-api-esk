@@ -67,6 +67,12 @@ describe Admin::ModelLoadingService do
         expected_categories = categories[0..9]
         expect(service.records).to contain_exactly *expected_categories
       end
+
+      it "sets right :page" do
+        service = described_class.new(Category.all, nil)
+        service.call
+        expect(service.pagination[:page]).to eq 1
+      end
     end
   end
 end
