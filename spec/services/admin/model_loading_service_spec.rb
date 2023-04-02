@@ -40,6 +40,12 @@ describe Admin::ModelLoadingService do
         service.call
         expect(service.pagination[:length]).to eq 4
       end
+
+      it "sets right :total" do
+        service = described_class.new(Category.all, params)
+        service.call
+        expect(service.pagination[:total]).to eq 15
+      end
     end
 
     context "when params are not present" do
