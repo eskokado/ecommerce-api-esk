@@ -60,6 +60,13 @@ describe Admin::ModelLoadingService do
         service.call
         expect(service.records.count).to eq 10
       end
+
+      it "returns first 10 records" do
+        service = described_class.new(Category.all, nil)
+        service.call
+        expected_categories = categories[0..9]
+        expect(service.records).to contain_exactly *expected_categories
+      end
     end
   end
 end
