@@ -85,6 +85,12 @@ describe Admin::ModelLoadingService do
         service.call
         expect(service.pagination[:total]).to eq 15
       end
+
+      it "sets right :total_pages" do
+        service = described_class.new(Category.all, nil)
+        service.call
+        expect(service.pagination[:total_pages]).to eq 2
+      end
     end
   end
 end
