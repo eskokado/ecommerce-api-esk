@@ -34,6 +34,12 @@ describe Admin::ModelLoadingService do
         service.call
         expect(service.pagination[:page]).to eq 2
       end
+
+      it "sets right :length" do
+        service = described_class.new(Category.all, params)
+        service.call
+        expect(service.pagination[:length]).to eq 4
+      end
     end
 
     context "when params are not present" do
