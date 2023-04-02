@@ -28,6 +28,12 @@ describe Admin::ModelLoadingService do
         expected_categories = search_categories[4..7]
         expect(service.records).to contain_exactly *expected_categories
       end
+
+      it "sets right :page" do
+        service = described_class.new(Category.all, params)
+        service.call
+        expect(service.pagination[:page]).to eq 2
+      end
     end
 
     context "when params are not present" do
