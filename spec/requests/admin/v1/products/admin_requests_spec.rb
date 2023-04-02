@@ -11,21 +11,24 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
     let(:url) { "/admin/v1/products" }
 
     context "without any params" do
-      before(:each) do
-        get url, headers: auth_header(user)
-      end
-
       it "returns 10 records" do
-        expect(JSON.parse(response.body).count).to eq 10
+        get url, headers: auth_header(user)
+        expect(body_json["products"].count).to eq 10
       end
 
       it "returns Products with :productable following the default pagination" do
+        get url, headers: auth_header(user)
         expected_products = products[0..9].map { |product| build_game_product_json(product) }
-        expect(JSON.parse(response.body).map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_products.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
+        expect(body_json["products"].map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_products.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
       end
 
       it "returns success status" do
+        get url, headers: auth_header(user)
         expect(response).to have_http_status(:ok)
+      end
+
+      it_behaves_like 'pagination meta attributes', { page: 1, length: 10, total: 10, total_pages: 1 } do
+        before { get url, headers: auth_header(user) }
       end
     end
 
@@ -43,12 +46,16 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         expected_return = search_name_products[0..9].map do |product|
           build_game_product_json(product)
         end
-        expect(JSON.parse(response.body).map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_return.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
+        expect(body_json["products"].map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_return.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
       end
 
       it "returns success status" do
         get url, headers: auth_header(user), params: search_params
         expect(response).to have_http_status(:ok)
+      end
+
+      it_behaves_like 'pagination meta attributes', { page: 1, length: 10, total: 15, total_pages: 2 } do
+        before { get url, headers: auth_header(user), params: search_params }
       end
     end
 
@@ -60,7 +67,7 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
 
       it "returns records sized by :length" do
         get url, headers: auth_header(user), params: pagination_params
-        expect(JSON.parse(response.body).count).to eq length
+        expect(body_json["products"].count).to eq length
       end
 
       it "returns products limited by pagination" do
@@ -68,12 +75,16 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         expected_return = products[5..9].map do |product|
           build_game_product_json(product)
         end
-        expect(JSON.parse(response.body).map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_return.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
+        expect(body_json["products"].map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_return.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
       end
 
       it "returns success status" do
         get url, headers: auth_header(user), params: pagination_params
         expect(response).to have_http_status(:ok)
+      end
+
+      it_behaves_like 'pagination meta attributes', { page: 2, length: 5, total: 10, total_pages: 2 } do
+        before { get url, headers: auth_header(user), params: pagination_params }
       end
     end
     context "with order params" do
@@ -85,12 +96,16 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
         expected_return = products[0..9].map do |product|
           build_game_product_json(product)
         end
-        expect(JSON.parse(response.body).map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_return.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
+        expect(body_json["products"].map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") }).to match_array(expected_return.map { |product| product.except("system_requirement").slice("id", "name", "description", "price", "status", "featured", "productable", "productable_id", "categories") })
       end
 
       it "returns success status" do
         get url, headers: auth_header(user), params: order_params
         expect(response).to have_http_status(:ok)
+      end
+
+      it_behaves_like 'pagination meta attributes', { page: 1, length: 10, total: 10, total_pages: 1 } do
+        before { get url, headers: auth_header(user), params: order_params }
       end
 
     end
