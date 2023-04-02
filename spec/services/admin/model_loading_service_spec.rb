@@ -55,6 +55,11 @@ describe Admin::ModelLoadingService do
     end
 
     context "when params are not present" do
+      it "returns default :length pagination" do
+        service = described_class.new(Category.all, nil)
+        service.call
+        expect(service.records.count).to eq 10
+      end
     end
   end
 end
