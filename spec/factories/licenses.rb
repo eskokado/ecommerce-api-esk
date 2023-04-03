@@ -1,6 +1,8 @@
 FactoryBot.define do
   factory :license do
-    key { Faker::Number.between(from: 5000, to: 10000) }
+    key { Faker::Alphanumeric.alpha(number: 10) }
+    platform { %i(steam battle_net origin).sample }
+    status { %i(available in_use inative).sample }
     association :user
     association :game
   end
