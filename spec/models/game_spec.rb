@@ -6,6 +6,8 @@ RSpec.describe Game, type: :model do
   it { is_expected.to validate_presence_of(:release_date) }
   it { is_expected.to validate_presence_of(:developer) }
 
+  it_has_behavior_of "like searchable concern", :game, :developer
+
   it { is_expected.to belong_to :system_requirement }
   it { is_expected.to have_one :product }
   it { is_expected.to have_many :licenses }

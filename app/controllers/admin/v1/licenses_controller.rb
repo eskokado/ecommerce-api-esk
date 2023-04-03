@@ -28,9 +28,13 @@ module Admin::V1
     def load_license
       @license = License.find(params[:id])
     end
+
+    def searchable_params
+      params.permit({ search: :key }, { order: {} }, :page, :length)
+    end
     def license_params
       return {} unless params.has_key?(:license)
-      params.require(:license).permit(:id, :key, :game_id, :user_id)
+      params.require(:license).permit(:id, :key, :platform, :status, :game_id, :user_id)
     end
 
     def save_license!

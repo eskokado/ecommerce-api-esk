@@ -95,7 +95,7 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
     context "with valid params" do
       let(:user) { create(:user) }
       let(:game) { create(:game) }
-      let(:new_key) { 6000 }
+      let(:new_key) { 'new key' }
       let(:license_params) { { license: attributes_for(:license, key: new_key).merge(user_id: user.id, game_id: game.id) }.to_json }
 
       it 'updates License' do
@@ -126,10 +126,12 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
       end
 
       it 'does not update License' do
-        old_key = Faker::Number.between(from: 5000, to: 10000)
+        old_key = Faker::Alphanumeric.alpha(number: 10)
+        old_platform = %i(steam battle_net origin).sample
+        old_status = %i(available in_use inative).sample
         old_user = create(:user)
         old_game = create(:game)
-        license = License.create!(key: old_key, user_id: old_user.id, game_id: old_game.id)
+        license = License.create!(key: old_key, platform: old_platform, status: old_status, user_id: old_user.id, game_id: old_game.id)
 
         patch url, headers: auth_header(user), params: license_invalid_params
         license.reload
