@@ -1,3 +1,3 @@
 json.license do
-  json.(@license, :id, :key, :game_id, :user_id)
+  json.(@license, :id, :key, :platform, :status, :game_id, :user_id)
 end
