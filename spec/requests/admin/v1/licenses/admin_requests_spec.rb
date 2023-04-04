@@ -3,10 +3,11 @@ require "rspec-json_matchers"
 
 RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
   let(:user) { create(:user) }
+  let(:game) { create(:game) }
 
-  context "GET /licenses" do
-    let(:url) { "/admin/v1/licenses" }
-    let!(:licenses) { create_list(:license, 10) }
+  context "GET /games/:game_id/licenses" do
+    let(:url) { "/admin/v1/game/#{game.id}/licenses" }
+    let!(:licenses) { create_list(:license, 10, game: game) }
 
     it "returns 10 Licenses" do
       get url, headers: auth_header(user)
@@ -15,7 +16,7 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
 
     it "returns 10 first Licenses" do
       get url, headers: auth_header(user)
-      expected_licenses = licenses[0..9].as_json(only: %i(id key game_id user_id))
+      expected_licenses = licenses[0..9].as_json(only: %i(id key platform status game_id user_id))
       expect(body_json['licenses']).to match_array expected_licenses
     end
 
@@ -25,8 +26,8 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
     end
   end
 
-  context "POST /licenses" do
-    let(:url) { "/admin/v1/licenses" }
+  context "POST /games/:game_id/licenses" do
+    let(:url) { "/admin/v1/game/#{game.id}/licenses" }
 
     context "with valid params" do
       let(:user) { create(:user) }
@@ -78,7 +79,7 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
 
     it "returns requested License" do
       get url, headers: auth_header(user)
-      expected_license = license.as_json(only: %i(id key game_id user_id))
+      expected_license = license.as_json(only: %i(id key platform status game_id user_id))
       expect(body_json['license']).to match_array expected_license
     end
 
@@ -109,7 +110,7 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
       it 'returns updated License' do
         patch url, headers: auth_header(user), params: license_params
         license.reload
-        expected_license = license.as_json(only: %i(id key game_id user_id))
+        expected_license = license.as_json(only: %i(id key platform status game_id user_id))
         body = JSON.parse(response.body)
         expect(body['license']).to match_array expected_license
       end
@@ -137,6 +138,8 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
         license.reload
 
         expect(license.key).to eq old_key
+        expect(license.platform).to eq old_platform
+        expect(license.status).to eq old_status
         expect(license.user_id).to eq old_user.id
         expect(license.game_id).to eq old_game.id
       end
