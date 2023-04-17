@@ -29,33 +29,32 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
         before { get url, headers: auth_header(user) }
       end
     end
-
-    context "with search[key] param" do
-      let!(:search_key_licenses) do
-        licenses = []
-        15.times { |n| licenses << create(:license, key: "SRC#{n + 1}", game: game) }
-        licenses
-      end
-
-      let(:search_params) { { search: { key: "SRC" } } }
-
-      it "returns only searched licenses limited by default pagination" do
-        get url, headers: auth_header(user), params: search_params
-        expected_licenses = search_key_licenses[0..9].map do |license|
-          license.as_json(only: %i(id key platform status game_id user_id))
+      context "with search[key] param" do
+        let!(:search_key_licenses) do
+          licenses = []
+          15.times { |n| licenses << create(:license, key: "SRC#{n + 1}", game: game) }
+          licenses
         end
-        expect(body_json['licenses']).to match_array expected_licenses
-      end
 
-      it "returns success status" do
-        get url, headers: auth_header(user), params: search_params
-        expect(response).to have_http_status(:ok)
-      end
+        let(:search_params) { { search: { key: "SRC" } } }
 
-      it_behaves_like 'pagination meta attributes', { page: 1, length: 10, total: 15, total_pages: 2 } do
-        before { get url, headers: auth_header(user), params: search_params }
+        it "returns only seached licenses limited by default pagination" do
+          get url, headers: auth_header(user), params: search_params
+          expected_licenses = search_key_licenses[0..9].map do |license|
+            license.as_json(only: %i(id key platform status game_id user_id))
+          end
+          expect(body_json['licenses']).to match_array expected_licenses
+        end
+
+        it "returns success status" do
+          get url, headers: auth_header(user), params: search_params
+          expect(response).to have_http_status(:ok)
+        end
+
+        it_behaves_like 'pagination meta attributes', { page: 1, length: 10, total: 15, total_pages: 2 } do
+          before { get url, headers: auth_header(user), params: search_params }
+        end
       end
-    end
   end
 
   context "POST /games/:game_id/licenses" do
