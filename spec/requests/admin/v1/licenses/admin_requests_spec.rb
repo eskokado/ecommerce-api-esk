@@ -29,7 +29,8 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
         before { get url, headers: auth_header(user) }
       end
     end
-      context "with search[key] param" do
+
+    context "with search[key] param" do
         let!(:search_key_licenses) do
           licenses = []
           15.times { |n| licenses << create(:license, key: "SRC#{n + 1}", game: game) }
@@ -54,7 +55,19 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
         it_behaves_like 'pagination meta attributes', { page: 1, length: 10, total: 15, total_pages: 2 } do
           before { get url, headers: auth_header(user), params: search_params }
         end
+    end
+
+    context "with pagination params" do
+      let(:page) { 2 }
+      let(:length) { 5 }
+
+      let(:pagination_params) { { page: page, length: length } }
+
+      it "returns records sized by :length" do
+        get url, headers: auth_header(user), params: pagination_params
+        expect(body_json['licenses'].count).to eq length
       end
+    end
   end
 
   context "POST /games/:game_id/licenses" do
