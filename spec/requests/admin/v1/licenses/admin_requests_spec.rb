@@ -6,28 +6,29 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
   let(:game) { create(:game) }
 
   context "GET /games/:game_id/licenses" do
-    let(:url) { "/admin/v1/game/#{game.id}/licenses" }
-    let!(:licenses) { create_list(:license, 10, game: game) }
+    let(:url) { "/admin/v1/games/#{game.id}/licenses" }
+    let!(:licenses) { create_list(:license, 10, game: game, user: user) }
 
-    it "returns 10 Licenses" do
-      get url, headers: auth_header(user)
-      expect(body_json['licenses'].count).to eq 10
-    end
+    context "without any params" do
+      it "returns 10 Licenses" do
+        get url, headers: auth_header(user)
+        expect(body_json['licenses'].count).to eq 10
+      end
 
-    it "returns 10 first Licenses" do
-      get url, headers: auth_header(user)
-      expected_licenses = licenses[0..9].as_json(only: %i(id key platform status game_id user_id))
-      expect(body_json['licenses']).to match_array expected_licenses
-    end
-
-    it "returns success status" do
-      get url, headers: auth_header(user)
-      expect(response).to have_http_status(:ok)
+      it "returns 10 first Licenses" do
+        get url, headers: auth_header(user)
+        expected_licenses = licenses[0..9].as_json(only: %i(id key platform status game_id user_id))
+        expect(body_json['licenses']).to match_array expected_licenses
+      end
+      it "returns success status" do
+        get url, headers: auth_header(user)
+        expect(response).to have_http_status(:ok)
+      end
     end
   end
 
   context "POST /games/:game_id/licenses" do
-    let(:url) { "/admin/v1/game/#{game.id}/licenses" }
+    let(:url) { "/admin/v1/games/#{game.id}/licenses" }
 
     context "with valid params" do
       let(:user) { create(:user) }
@@ -38,6 +39,12 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
         expect do
           post url, headers: auth_header(user), params: license_params
         end.to change(License, :count).by(1)
+      end
+
+      it 'returns last added License' do
+        post url, headers: auth_header(user), params: license_params
+        expected_license = License.last.as_json(only: %i(id key platform status game_id user_id))
+        expect(body_json['license']).to match_array expected_license
       end
 
       it 'returns success status' do
@@ -138,8 +145,8 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
         license.reload
 
         expect(license.key).to eq old_key
-        expect(license.platform).to eq old_platform
-        expect(license.status).to eq old_status
+        expect(license.platform.to_s).to eq old_platform.to_s
+        expect(license.status.to_s).to eq old_status.to_s
         expect(license.user_id).to eq old_user.id
         expect(license.game_id).to eq old_game.id
       end
