@@ -83,6 +83,17 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
         before { get url, headers: auth_header(user), params: pagination_params }
       end
     end
+
+    context "with order params" do
+      let(:order_params) { { order: { key: 'desc' } } }
+
+      it "returns ordered licenses limited by default pagination" do
+        get url, headers: auth_header(user), params: order_params
+        licenses.sort! { |a, b| b[:key] <=> a[:key]}
+        expected_licenses = licenses[0..9].as_json(only: %i(id key platform status game_id user_id))
+        expect(body_json['licenses']).to match_array expected_licenses
+      end
+    end
   end
 
   context "POST /games/:game_id/licenses" do
