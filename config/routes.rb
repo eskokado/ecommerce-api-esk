@@ -6,7 +6,9 @@ Rails.application.routes.draw do
       get "home" => "home#index"
       resources :categories
       resources :system_requirements
-      resources :games
+      resources :games, only: [], shallow: true do
+        resources :licenses
+      end
       resources :coupons
       resources :products
       resources :users
