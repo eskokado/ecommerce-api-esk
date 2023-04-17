@@ -67,6 +67,12 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
         get url, headers: auth_header(user), params: pagination_params
         expect(body_json['licenses'].count).to eq length
       end
+
+      it "returns licenses limited by pagination" do
+        get url, headers: auth_header(user), params: pagination_params
+        expected_licenses = licenses[5..9].as_json(only: %i(id key platform status game_id user_id))
+        expect(body_json['licenses']).to match_array expected_licenses
+      end
     end
   end
 
