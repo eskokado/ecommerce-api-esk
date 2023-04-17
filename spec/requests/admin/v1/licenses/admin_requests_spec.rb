@@ -46,6 +46,11 @@ RSpec.describe "Admin::V1::Licenses as :admin", type: :request do
         end
         expect(body_json['licenses']).to match_array expected_licenses
       end
+
+      it "returns success status" do
+        get url, headers: auth_header(user), params: search_params
+        expect(response).to have_http_status(:ok)
+      end
     end
   end
 
