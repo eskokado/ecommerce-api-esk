@@ -5,6 +5,8 @@ FactoryBot.define do
     price { Faker::Number.decimal(l_digits: 2, r_digits: 2) * Faker::Number.between(from: 100, to: 400) }
     image { Rack::Test::UploadedFile.new(Rails.root.join("spec/support/images/product_image.png")) }
     status { :available }
+    featured { true }
+
 
     after :build do |product|
       product.productable ||= create(:game)
