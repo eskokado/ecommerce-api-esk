@@ -469,7 +469,7 @@ RSpec.describe "Admin V1 Products as :admin", type: :request do
 end
 
 def build_game_product_json(product)
-  json = product.as_json(only: %i(id name description price status))
+  json = product.as_json(only: %i(id name description price status featured))
   json['productable'] = product.productable.as_json(only: %i(id mode release_date developer))
   json['categories'] = product.categories.map { |category| category.as_json(only: %i(id name)) }
   json
