@@ -10,5 +10,5 @@ class License < ApplicationRecord
   belongs_to :game
 
   enum platform: { steam: 1, battle_net: 2, origin: 3 }
-  enum status: { available: 1, in_use: 2, inative: 3 }
+  enum status: { available: 1, in_use: 2, inactive: 3 }
 end
